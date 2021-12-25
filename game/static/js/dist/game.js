@@ -211,11 +211,12 @@ class Player extends AcGameObject {
             return false;
         });
         this.playground.game_map.$canvas.mousedown(function(e) {
+            const rect = outer.ctx.canvas.getBoundingClientRect();
             if(e.which === 3) {
-                outer.move_to(e.clientX, e.clientY);
+                outer.move_to(e.clientX - rect.left, e.clientY - rect.top);
             } else if(e.which === 1) {
                 if(outer.cur_skill === "fireball") {
-                    outer.shoot_fireball(e.clientX, e.clientY);
+                    outer.shoot_fireball(e.clientX - rect.left, e.clientY - rect.top);
                 }
                 outer.cur_skill = null;
             }
@@ -398,17 +399,7 @@ class AcGamePlayground {
         this.root = root;
         this.$playground = $(`<div class="ac-game-playground"></div>`);
 
-        // this.hide();
-        this.root.$ac_game.append(this.$playground);
-        this.width = this.$playground.width();
-        this.height = this.$playground.height();
-        this.game_map = new GameMap(this);
-        this.players = [];
-        this.players.push(new Player(this, this.width / 2, this.height / 2, this.height * 0.05, "white", this.height * 0.15, true));
-
-        for(let i = 0; i < 5; i++) {
-            this.players.push(new Player(this, this.width / 2, this.height / 2, this.height * 0.05, this.get_random_color(), this.height * 0.15, false));
-        }
+        this.hide();
 
         this.start();
     }
@@ -423,6 +414,16 @@ class AcGamePlayground {
 
     show() {    // 打开playground界面
         this.$playground.show();
+        this.root.$ac_game.append(this.$playground);
+        this.width = this.$playground.width();
+        this.height = this.$playground.height();
+        this.game_map = new GameMap(this);
+        this.players = [];
+        this.players.push(new Player(this, this.width / 2, this.height / 2, this.height * 0.05, "white", this.height * 0.15, true));
+
+        for(let i = 0; i < 5; i++) {
+            this.players.push(new Player(this, this.width / 2, this.height / 2, this.height * 0.05, this.get_random_color(), this.height * 0.15, false));
+        }
     }
 
     hide() {    // 关闭playground界面
@@ -433,7 +434,7 @@ export class AcGame {
     constructor(id) {
         this.id = id;
         this.$ac_game = $('#' + id);
-        // this.menu = new AcGameMenu(this);
+        this.menu = new AcGameMenu(this);
         this.playground = new AcGamePlayground(this);
         this.start();
     }
