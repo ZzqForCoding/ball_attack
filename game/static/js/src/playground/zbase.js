@@ -34,7 +34,6 @@ class AcGamePlayground {
     show(mode) {    // 打开playground界面
         let outer = this;
         this.$playground.show();
-        this.resize();
         this.width = this.$playground.width();
         this.height = this.$playground.height();
         this.game_map = new GameMap(this);

@@ -15,8 +15,6 @@ class MultiPlayer(AsyncWebsocketConsumer):
         self.room_name = None
 
         start = 0
-        if data['username'] != "rarestark":
-            start = 100000
 
         for i in range(start, 100000000):
             name = "room-%d" % (i)
