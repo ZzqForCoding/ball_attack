@@ -29,6 +29,7 @@ class AcGamePlayground {
         this.scale = this.height;
 
         if(this.game_map) this.game_map.resize();
+        if(this.chat_field) this.chat_field.resize();
     }
 
     show(mode) {    // 打开playground界面
@@ -43,8 +44,6 @@ class AcGamePlayground {
         this.notice_board = new NoticeBoard(this);
         this.player_count = 0;
 
-        this.resize();
-
         this.players = [];
         this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, "white", 0.15, "me", this.root.settings.username, this.root.settings.photo));
 
@@ -53,6 +52,7 @@ class AcGamePlayground {
                 this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, this.get_random_color(), 0.15, "robot"));
             }
         } else if(mode === "multi mode") {
+            this.chat_field = new ChatField(this);
             this.mps = new MultiPlayerSocket(this);
             this.mps.uuid = this.players[0].uuid;
 
@@ -60,6 +60,8 @@ class AcGamePlayground {
                 outer.mps.send_create_player(outer.root.settings.username, outer.root.settings.photo);
             };
         }
+
+        this.resize();
     }
 
     hide() {    // 关闭playground界面
