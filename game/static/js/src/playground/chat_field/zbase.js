@@ -22,6 +22,10 @@ class ChatField {
     add_listening_events() {
         let outer = this;
 
+        this.$history.mousedown(function(e) {
+            return true;
+        });
+
         this.$input.keydown(function(e) {
             if(e.which === 27) {    // esc
                 outer.hide_input();
@@ -40,7 +44,23 @@ class ChatField {
     }
 
     resize() {
-        
+        this.width = this.playground.width * 0.2;
+        this.history_height = this.playground.height * 0.3;
+
+        this.margin_left = (this.playground.$playground.width() - this.playground.width) / 2 + 10;
+        this.history_top = (this.playground.$playground.height() - this.playground.height) / 2 + this.playground.height / 2;
+        this.input_top = this.history_top + 0.02 * this.playground.height + this.history_height;
+        this.$history.css({
+            "width": this.width,
+            "height": this.history_height,
+            "left": this.margin_left,
+            "top": this.history_top
+        });
+        this.$input.css({
+            "width": this.width,
+            "left": this.margin_left,
+            "top": this.input_top
+        });
     }
 
     render_message(message) {
