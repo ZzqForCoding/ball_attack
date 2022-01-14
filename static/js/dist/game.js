@@ -656,6 +656,45 @@ class Player extends AcGameObject {
         }
     }
 }
+class ScoreBoard extends AcGameObject {
+    constructor(playground) {
+        super();
+        this.playground = playground;
+        this.ctx = this.playground.game_map.ctx;
+
+        this.state = null;  //win: 胜利, lose: 失败
+
+        this.win_img = new Image();
+        this.win_img.src = "https://cdn.acwing.com/media/article/image/2021/12/17/1_8f58341a5e-win.png";
+        this.lose_img = new Image();
+        this.lose_img.src = "https://cdn.acwing.com/media/article/image/2021/12/17/1_9254b5f95e-lose.png";
+    }
+
+    start() {
+        //this.win();
+    }
+
+    win() {
+        this.state = "win";
+    }
+
+    lose() {
+        this.state = "lose";
+    }
+
+    update() {
+        this.render();
+    }
+
+    render() {
+        let len = this.playground.height / 2;
+        if(this.state === "win") {
+            this.ctx.drawImage(this.win_img, this.playground.width / 2 - len / 2, this.playground.height / 2 - len / 2, len, len);
+        } else if(this.state === "lose") {
+            this.ctx.drawImage(this.lose_img, this.playground.width / 2 - len / 2, this.playground.height / 2 - len / 2, len, len);
+        }
+    }
+}
 class FireBall extends AcGameObject {
     constructor(playground, player, x, y, radius, vx, vy, color, speed, move_length, damage) {
         super();
@@ -930,11 +969,27 @@ class AcGamePlayground {
         return colors[Math.floor(Math.random() * 6)];
     }
 
+    create_uuid() {
+        let res = "";
+        for(let i = 0; i < 8; i++) {
+            let x = parseInt(Math.floor(Math.random() * 10));  // 返回[0, 1)之间的数
+            res += x;
+        }
+        return res;
+    }
+
     start() {
         let outer = this;
-        $(window).resize(function() {
+        let uuid = this.create_uuid();
+        $(window).on('resize.${uuid}', function() {
             outer.resize();
         });
+
+        if(this.root.AcWingOS) {
+            this.root.AcWingOS.api.window.on_close(function() {
+                $(window).off('resize.${uuid}');
+            });
+        }
     }
 
     resize() {
@@ -959,6 +1014,9 @@ class AcGamePlayground {
         this.mode = mode;
         this.state = "waiting";     // waiting -> fighting -> over
         this.notice_board = new NoticeBoard(this);
+
+        this.score_board = new ScoreBoard(this);
+
         this.player_count = 0;
 
         this.players = [];
