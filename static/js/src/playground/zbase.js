@@ -63,6 +63,8 @@ class AcGamePlayground {
 
         this.player_count = 0;
 
+        this.resize();
+
         this.players = [];
         this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, "white", 0.15, "me", this.root.settings.username, this.root.settings.photo));
 
@@ -80,7 +82,6 @@ class AcGamePlayground {
             };
         }
 
-        this.resize();
     }
 
     hide() {    // 关闭playground界面

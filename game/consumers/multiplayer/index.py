@@ -20,7 +20,7 @@ class MultiPlayer(AsyncWebsocketConsumer):
         if self.room_name:
             await self.channel_layer.group_discard(self.room_name, self.channel_name);
 
-    async def create_player(self, data):
+    async def create_matched_player(self, data):
         self.room_name = None
         self.uuid = data['uuid']
         # Make socket
@@ -47,6 +47,52 @@ class MultiPlayer(AsyncWebsocketConsumer):
 
         # Close!
         transport.close()
+
+    async def create_player(self, data):
+        self.room_name = None
+
+        start = 0
+
+        for i in range(start, 100000000):
+            name = "room-%d" % (i)
+            if not cache.has_key(name) or len(cache.get(name)) < settings.ROOM_CAPACITY:
+                self.room_name = name
+                break
+
+        if not self.room_name:
+            return
+
+        if not cache.has_key(self.room_name):
+            cache.set(self.room_name, [], 3600) # 有效期一小时
+
+        for player in cache.get(self.room_name):
+            await self.send(text_data=json.dumps({
+                'event': "create_player",
+                'uuid': player['uuid'],
+                'username': player['username'],
+                'photo': player['photo'],
+            }))
+
+        await self.channel_layer.group_add(self.room_name, self.channel_name)
+
+        players = cache.get(self.room_name)
+        players.append({
+            'uuid': data['uuid'],
+            'username': data['username'],
+            'photo': data['photo']
+        })
+        cache.set(self.room_name, players, 3600)     # 有效期一小时
+        await self.channel_layer.group_send(
+            self.room_name,
+            {
+                'type': "group_send_event",
+                'event': "create_player",
+                'uuid': data['uuid'],
+                'username': data['username'],
+                'photo': data['photo'],
+            }
+        )
+
 
     async def move_to(self, data):
         await self.channel_layer.group_send(

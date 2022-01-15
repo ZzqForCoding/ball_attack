@@ -17,6 +17,7 @@ class ChatField {
 
     start() {
         this.add_listening_events();
+        this.resize();
     }
 
     add_listening_events() {
