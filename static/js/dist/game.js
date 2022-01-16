@@ -82,6 +82,10 @@ class AcGameObject {
 
     }
 
+    late_update() { // 在每一帧的最后执行一次
+
+    }
+
     on_destroy() {  // 在被销毁前执行一次
 
     }
@@ -111,6 +115,12 @@ let AC_GAME_ANIMATION = function(timestamp) {
             obj.update();
         }
     }
+
+    for(let i = 0; i < AC_GAME_OBJECTS.length; i++) {
+        let obj = AC_GAME_OBJECTS[i];
+        obj.late_update();  // 按道理来说update和late_update第一帧不会执行, 但是在此游戏几乎不会有影响, 因此不处理
+    }
+
     last_timestamp = timestamp;
 
     requestAnimationFrame(AC_GAME_ANIMATION);
@@ -532,11 +542,21 @@ class Player extends AcGameObject {
 
     update() {
         this.spent_time += this.timedelta / 1000;
+
+        this.update_win();
+
         if(this.character === "me" && this.playground.state === "fighting") {
             this.update_coldtime();
         }
         this.update_move();
         this.render();
+    }
+
+    update_win() {
+        if(this.playground.state === "fighting" && this.character === "me" && this.playground.players.length === 1) {
+            this.playground.state = "over";
+            this.playground.score_board.win();
+        }
     }
 
     update_coldtime() {
@@ -647,7 +667,10 @@ class Player extends AcGameObject {
 
     on_destroy() {
         if(this.character === "me")
-            this.playground.state = "over";
+            if(this.playground.state === "fighting") {
+                this.playground.state = "over";
+                this.playground.score_board.lose();
+            }
 
         for (let i = 0; i < this.playground.players.length; i++) {
             if(this.playground.players[i] == this) {
@@ -672,18 +695,37 @@ class ScoreBoard extends AcGameObject {
     }
 
     start() {
-        //this.win();
+    }
+
+    add_listening_events() {
+        let outer = this;
+        let $canvas = this.playground.game_map.$canvas;
+
+        $canvas.on(`click`, function() {
+            outer.playground.hide();
+            outer.playground.root.menu.show();
+        });
     }
 
     win() {
         this.state = "win";
+
+        let outer = this;
+        setTimeout(function() {
+            outer.add_listening_events();
+        }, 1000);
     }
 
     lose() {
         this.state = "lose";
+
+        let outer = this;
+        setTimeout(function() {
+            outer.add_listening_events();
+        }, 1000);
     }
 
-    update() {
+    late_update() {
         this.render();
     }
 
@@ -1042,6 +1084,27 @@ class AcGamePlayground {
     }
 
     hide() {    // 关闭playground界面
+        while(this.players && this.players.length > 0) {
+            this.players[0].destroy();
+        }
+
+        if(this.game_map) {
+            this.game_map.destroy();
+            this.game_map = null;
+        }
+
+        if(this.notice_board) {
+            this.notice_board.destroy();
+            this.notice_board = null;
+        }
+
+        if(this.score_board) {
+            this.score_board.destroy();
+            this.score_board = null;
+        }
+
+        this.$playground.empty();
+
         this.$playground.hide();
     }
 }

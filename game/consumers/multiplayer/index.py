@@ -20,7 +20,7 @@ class MultiPlayer(AsyncWebsocketConsumer):
         if self.room_name:
             await self.channel_layer.group_discard(self.room_name, self.channel_name);
 
-    async def create_matched_player(self, data):
+    async def create_player(self, data):
         self.room_name = None
         self.uuid = data['uuid']
         # Make socket
@@ -35,6 +35,7 @@ class MultiPlayer(AsyncWebsocketConsumer):
         # Create a client to use the protocol encoder
         client = Match.Client(protocol)
 
+        # 异步更新数据库需要定义函数
         def db_get_player():
             return Player.objects.get(user__username=data['username'])
 
@@ -48,7 +49,7 @@ class MultiPlayer(AsyncWebsocketConsumer):
         # Close!
         transport.close()
 
-    async def create_player(self, data):
+    async def create_matched_player(self, data):
         self.room_name = None
 
         start = 0
@@ -120,6 +121,39 @@ class MultiPlayer(AsyncWebsocketConsumer):
         )
 
     async def attack(self, data):
+        if not self.room_name:
+            return
+
+        players = cache.get(self.room_name)
+
+        # 两个人同时开炮, a活b死, a处理完对局后, b就会遇到这情况
+        if not players:
+            return;
+
+        # 在后台维护血量, 更安全
+        for player in players:
+            if player['uuid'] == data['attackee_uuid']:
+                player['hp'] -= 25
+
+        remain_cnt = 0
+        for player in players:
+            if player['hp'] > 0:
+                remain_cnt += 1
+
+        if remain_cnt > 1:
+            if self.room_name:
+                cache.set(self.room_name, players, 3600)
+        else:
+            def db_update_player_score(username, score):
+                player = Player.objects.get(user__username=username)
+                player.score += score
+                player.save()
+            for player in players:
+                if player['hp'] <= 0:
+                    await database_sync_to_async(db_update_player_score)(player['username'], -5)
+                else:
+                    await database_sync_to_async(db_update_player_score)(player['username'], 10)
+
         await self.channel_layer.group_send(
             self.room_name,
             {

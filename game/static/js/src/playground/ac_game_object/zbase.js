@@ -26,6 +26,10 @@ class AcGameObject {
 
     }
 
+    late_update() { // 在每一帧的最后执行一次
+
+    }
+
     on_destroy() {  // 在被销毁前执行一次
 
     }
@@ -55,6 +59,12 @@ let AC_GAME_ANIMATION = function(timestamp) {
             obj.update();
         }
     }
+
+    for(let i = 0; i < AC_GAME_OBJECTS.length; i++) {
+        let obj = AC_GAME_OBJECTS[i];
+        obj.late_update();  // 按道理来说update和late_update第一帧不会执行, 但是在此游戏几乎不会有影响, 因此不处理
+    }
+
     last_timestamp = timestamp;
 
     requestAnimationFrame(AC_GAME_ANIMATION);
