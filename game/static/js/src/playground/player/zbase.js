@@ -249,9 +249,10 @@ class Player extends AcGameObject {
 
     update_move() {  //更新玩家移动
         //一分钟60秒，每五秒发射次，1 / 300为发射炮弹的概率
-        if(this.character === "robot" && this.spent_time > 3 && Math.random() < 1 / 300.0) {
+        if(this.character === "robot" && this.spent_time > 3 && Math.random() < 1 / 420.0) {
             if(this.fireball_robot_coldtime > this.eps) return false;
             let player = this.playground.players[Math.floor(Math.random() * this.playground.players.length)];
+            if(this.playground.game_mode >= 2 && Math.random() > 0.95) player = this.playground.players[0];     // 若是困难、炼狱难度, 有一定概率优先攻击玩家
             if(player == this) return false;
             let tx = player.x + player.speed * this.vx * this.timedelta / 1000 * 0.3;
             let ty = player.y + player.speed * this.vy * this.timedelta / 1000 * 0.3;

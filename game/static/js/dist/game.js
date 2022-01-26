@@ -33,10 +33,10 @@ class AcGameChooseMode {
         this.mode_item_name = ["入门", "普通", "困难", "炼狱"];
         // 后面补充
         this.mode_item_desc = [
-            "由3个AI构成, 并会无区分的攻击玩家或其他AI, 攻击速度慢、攻击精度低。",
+            "由3个AI构成, 并会无区分的攻击玩家或其他AI, 攻击速度慢、攻击精度适中。",
             "由4个AI构成, 并会无区分的攻击玩家或其他AI, 攻击速度适中, 攻击精度适中。",
-            "由5个AI构成, 并会大概率攻击玩家, 攻击速度适中, 攻击精度适中!",
-            "由6个AI构成, 并会大概率攻击玩家, 攻击速度高, 攻击精度高!!!"
+            "由5个AI构成, 并会大概率攻击玩家, 攻击速度适中, 攻击精度高!",
+            "由5个AI构成, 并会大概率攻击玩家, 攻击速度高, 攻击精度高!!!"
         ];
 
         this.$return = this.$choose_mode.find('.ac-game-choose-mode-return');
@@ -663,9 +663,10 @@ class Player extends AcGameObject {
 
     update_move() {  //更新玩家移动
         //一分钟60秒，每五秒发射次，1 / 300为发射炮弹的概率
-        if(this.character === "robot" && this.spent_time > 3 && Math.random() < 1 / 300.0) {
+        if(this.character === "robot" && this.spent_time > 3 && Math.random() < 1 / 420.0) {
             if(this.fireball_robot_coldtime > this.eps) return false;
             let player = this.playground.players[Math.floor(Math.random() * this.playground.players.length)];
+            if(this.playground.game_mode >= 2 && Math.random() > 0.95) player = this.playground.players[0];     // 若是困难、炼狱难度, 有一定概率优先攻击玩家
             if(player == this) return false;
             let tx = player.x + player.speed * this.vx * this.timedelta / 1000 * 0.3;
             let ty = player.y + player.speed * this.vy * this.timedelta / 1000 * 0.3;
@@ -1168,7 +1169,7 @@ class AcGamePlayground {
             if(this.game_mode == 0) len = 3;
             else if(this.game_mode == 1) len = 4;
             else if(this.game_mode == 2) len = 5;
-            else len = 6;
+            else len = 5;
             for(let i = 0; i < len; i++) {
                 this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, this.get_random_color(), 0.15, "robot"));
             }
