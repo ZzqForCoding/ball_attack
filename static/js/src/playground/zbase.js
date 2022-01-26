@@ -1,6 +1,7 @@
 class AcGamePlayground {
     constructor(root) {
         this.root = root;
+        this.game_mode = 0;
         this.$playground = $(`<div class="ac-game-playground"></div>`);
 
         this.hide();
@@ -69,7 +70,12 @@ class AcGamePlayground {
         this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, "white", 0.15, "me", this.root.settings.username, this.root.settings.photo));
 
         if(mode === "single mode") {
-            for(let i = 0; i < 5; i++) {
+            let len = 0;
+            if(this.game_mode == 0) len = 3;
+            else if(this.game_mode == 1) len = 4;
+            else if(this.game_mode == 2) len = 5;
+            else len = 6;
+            for(let i = 0; i < len; i++) {
                 this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, this.get_random_color(), 0.15, "robot"));
             }
         } else if(mode === "multi mode") {

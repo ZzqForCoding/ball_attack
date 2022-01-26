@@ -1,3 +1,11 @@
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 .ac-game-settings {
     width: 100%;
     height: 100%;
@@ -186,3 +194,57 @@
     background-color: rgba(222,225,230, 0.2);
 }
 
+.ac-game-choose-mode {
+    width: 100%;
+    height: 100%;
+    background-image: url("/static/image/menu/background2.gif");
+    background-size: 100% 100%;
+    user-select: none;
+}
+
+.ac-game-choose-mode-return {
+    position: relative;
+    top: 2.5%;
+    left: 2.5%;
+    color: white;
+    width: 5vw;
+    height: 5vh;
+    font-size: 3vh;
+    font-color: white;
+    cursor: pointer;
+    border-radius: 10px;
+    text-align: center;
+    letter-spacing: 0.5vw;
+    background-color: rgba(39, 21, 28, 0.6);
+}
+
+.ac-game-choose-mode-return:hover {
+    transform: scale(1.1);
+    transition: 100ms;
+}
+
+.ac-game-choose-mode-item {
+    width: 20vw;
+    position: relative;
+    top: 35%;
+    left: 54.0%;
+    transform: translate(-50%, -50%);
+}
+
+.ac-game-choose-mode-item-name {
+    color: white;
+    height: 4vh;
+    width: 10vw;
+    font-size: 3vh;
+    text-align: center;
+    background-color: rgba(39, 21, 28, 0.6);
+    border-radius: 10px;
+    letter-spacing: 0.5vw;
+    cursor: pointer;
+    margin: 1vh;
+}
+
+.ac-game-choose-mode-item-name:hover {
+    transform: scale(1.1);
+    transition: 100ms;
+}

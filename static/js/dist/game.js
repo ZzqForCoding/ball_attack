@@ -1,11 +1,93 @@
+class AcGameChooseMode {
+    constructor(root) {
+        this.root = root;
+        this.$choose_mode = $(`
+<div class="ac-game-choose-mode">
+    <div class="ac-game-choose-mode-return">
+        返回
+    </div>
+    <div class="ac-game-choose-mode-desc">
+    </div>
+    <div class="ac-game-choose-mode-item">
+        <div class="ac-game-choose-mode-item">
+            <div class="ac-game-choose-mode-item-name"></div>
+        </div>
+        <br>
+        <div class="ac-game-choose-mode-item">
+            <div class="ac-game-choose-mode-item-name"></div>
+        </div>
+        <br>
+        <div class="ac-game-choose-mode-item">
+            <div class="ac-game-choose-mode-item-name"></div>
+        </div>
+        <br>
+        <div class="ac-game-choose-mode-item">
+             <div class="ac-game-choose-mode-item-name"></div>
+        </div>
+    </div>
+</div>
+        `);
+        this.$choose_mode.hide();
+        this.root.$ac_game.append(this.$choose_mode);
+
+        this.mode_item_name = ["入门", "普通", "困难", "炼狱"];
+        // 后面补充
+        this.mode_item_desc = [
+            "由3个AI构成, 并会无区分的攻击玩家或其他AI, 攻击速度慢、攻击精度低。",
+            "由4个AI构成, 并会无区分的攻击玩家或其他AI, 攻击速度适中, 攻击精度适中。",
+            "由5个AI构成, 并会大概率攻击玩家, 攻击速度适中, 攻击精度适中!",
+            "由6个AI构成, 并会大概率攻击玩家, 攻击速度高, 攻击精度高!!!"
+        ];
+
+        this.$return = this.$choose_mode.find('.ac-game-choose-mode-return');
+        this.$desc = this.$choose_mode.find('ac-game-choose-mode-desc');
+        this.$mode_name = this.$choose_mode.find('.ac-game-choose-mode-item-name');
+
+        let outer = this;
+        this.$mode_name.each(function(i) {
+            $(this).text(outer.mode_item_name[i]);
+        });
+
+        this.start();
+    }
+
+    start() {
+        this.add_listening_events();
+    }
+
+    add_listening_events() {
+        let outer = this;
+        this.$return.click(function() {
+            outer.hide();
+            outer.root.menu.show();
+        });
+        this.$mode_name.each(function(i) {
+            $(this).click(function() {
+                outer.root.playground.game_mode = i;
+                outer.root.playground.show("single mode");
+                outer.hide();
+            });
+            $(this).mouseover(function() {
+            });
+        });
+    }
+
+    show() {
+        this.$choose_mode.show();
+    }
+
+    hide() {
+        this.$choose_mode.hide();
+    }
+}
 class AcGameMenu {
     constructor(root) {
         this.root = root;
         this.$menu = $(`
 <div class="ac-game-menu">
     <div class="ac-game-menu-field">
-        <div class="ac-game-menu-field-item ac-game-menu-field-item-single-mode">
-            单人模式
+        <div class="ac-game-menu-field-item ac-game-menu-field-item-man-machine-mode">
+            人机模式
         </div>
         <br>
         <div class="ac-game-menu-field-item ac-game-menu-field-item-multi-mode">
@@ -20,7 +102,7 @@ class AcGameMenu {
 `);
         this.$menu.hide();
         this.root.$ac_game.append(this.$menu);
-        this.$single_mode = this.$menu.find('.ac-game-menu-field-item-single-mode');
+        this.$single_mode = this.$menu.find('.ac-game-menu-field-item-man-machine-mode');
         this.$multi_mode = this.$menu.find('.ac-game-menu-field-item-multi-mode');
         this.$settings = this.$menu.find('.ac-game-menu-field-item-settings');
 
@@ -35,7 +117,8 @@ class AcGameMenu {
         let outer = this;
         this.$single_mode.click(function() {
             outer.hide();
-            outer.root.playground.show("single mode");
+            // outer.root.playground.show("single mode");
+            outer.root.choose_mode.show();
         });
         this.$multi_mode.click(function() {
             outer.hide();
@@ -574,11 +657,11 @@ class Player extends AcGameObject {
             if(player == this) return false;
             let tx = player.x + player.speed * this.vx * this.timedelta / 1000 * 0.3;
             let ty = player.y + player.speed * this.vy * this.timedelta / 1000 * 0.3;
-            this.shoot_fireball(player.x, player.y);
+            this.shoot_fireball(tx, ty);
         }
         if(this.damage_speed > this.eps) {    //击退的反速度小于10就不用后退了
             this.vx = this.vy = 0;
-            this.move_length = 0
+            this.move_length = 0;
             this.x += this.damage_x * this.damage_speed * this.timedelta / 1000;
             this.y += this.damage_y * this.damage_speed * this.timedelta / 1000;
             this.damage_speed *= this.friction;
@@ -1000,6 +1083,7 @@ class MultiPlayerSocket {
 class AcGamePlayground {
     constructor(root) {
         this.root = root;
+        this.game_mode = 0;
         this.$playground = $(`<div class="ac-game-playground"></div>`);
 
         this.hide();
@@ -1068,7 +1152,12 @@ class AcGamePlayground {
         this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, "white", 0.15, "me", this.root.settings.username, this.root.settings.photo));
 
         if(mode === "single mode") {
-            for(let i = 0; i < 5; i++) {
+            let len = 0;
+            if(this.game_mode == 0) len = 3;
+            else if(this.game_mode == 1) len = 4;
+            else if(this.game_mode == 2) len = 5;
+            else len = 6;
+            for(let i = 0; i < len; i++) {
                 this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, this.get_random_color(), 0.15, "robot"));
             }
         } else if(mode === "multi mode") {
@@ -1403,6 +1492,7 @@ export class AcGame {
 
         this.settings = new Settings(this);
         this.menu = new AcGameMenu(this);
+        this.choose_mode = new AcGameChooseMode(this);
         this.playground = new AcGamePlayground(this);
 
         this.start();

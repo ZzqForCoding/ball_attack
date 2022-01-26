@@ -243,11 +243,11 @@ class Player extends AcGameObject {
             if(player == this) return false;
             let tx = player.x + player.speed * this.vx * this.timedelta / 1000 * 0.3;
             let ty = player.y + player.speed * this.vy * this.timedelta / 1000 * 0.3;
-            this.shoot_fireball(player.x, player.y);
+            this.shoot_fireball(tx, ty);
         }
         if(this.damage_speed > this.eps) {    //击退的反速度小于10就不用后退了
             this.vx = this.vy = 0;
-            this.move_length = 0
+            this.move_length = 0;
             this.x += this.damage_x * this.damage_speed * this.timedelta / 1000;
             this.y += this.damage_y * this.damage_speed * this.timedelta / 1000;
             this.damage_speed *= this.friction;
