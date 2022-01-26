@@ -451,6 +451,8 @@ class Player extends AcGameObject {
             this.blink_coldtime = 5;        // 单位P: 秒
             this.blink_img = new Image();
             this.blink_img.src = "https://cdn.acwing.com/media/article/image/2021/12/02/1_daccabdc53-blink.png";
+        } else if(this.character === "robot") {
+            this.fireball_robot_coldtime = 0.5;
         }
     }
 
@@ -555,7 +557,11 @@ class Player extends AcGameObject {
         let fireball = new FireBall(this.playground, this, x, y, radius, vx, vy, color, speed, move_length, 0.01);
         this.fireballs.push(fireball);
 
-        this.fireball_coldtime = 3;
+        if(this.character === "me") {
+            this.fireball_coldtime = 3;
+        } else if(this.character === "robot") {
+            this.fireball_robot_coldtime = 0.5;
+        }
 
         return fireball;
     }
@@ -628,7 +634,7 @@ class Player extends AcGameObject {
 
         this.update_win();
 
-        if(this.character === "me" && this.playground.state === "fighting") {
+        if(this.playground.state === "fighting") {
             this.update_coldtime();
         }
         this.update_move();
@@ -643,16 +649,22 @@ class Player extends AcGameObject {
     }
 
     update_coldtime() {
-        this.fireball_coldtime -= this.timedelta / 1000;
-        this.fireball_coldtime = Math.max(this.fireball_coldtime, 0);
+        if(this.character === "me") {
+            this.fireball_coldtime -= this.timedelta / 1000;
+            this.fireball_coldtime = Math.max(this.fireball_coldtime, 0);
 
-        this.blink_coldtime -= this.timedelta / 1000;
-        this.blink_coldtime = Math.max(this.blink_coldtime, 0);
+            this.blink_coldtime -= this.timedelta / 1000;
+            this.blink_coldtime = Math.max(this.blink_coldtime, 0);
+        } else if(this.character === "robot") {
+            this.fireball_robot_coldtime -= this.timedelta / 1000;
+            this.fireball_robot_coldtime = Math.max(this.fireball_robot_coldtime, 0);
+        }
     }
 
     update_move() {  //更新玩家移动
         //一分钟60秒，每五秒发射次，1 / 300为发射炮弹的概率
         if(this.character === "robot" && this.spent_time > 3 && Math.random() < 1 / 300.0) {
+            if(this.fireball_robot_coldtime > this.eps) return false;
             let player = this.playground.players[Math.floor(Math.random() * this.playground.players.length)];
             if(player == this) return false;
             let tx = player.x + player.speed * this.vx * this.timedelta / 1000 * 0.3;
