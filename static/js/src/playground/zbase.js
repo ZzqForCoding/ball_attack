@@ -70,10 +70,10 @@ class AcGamePlayground {
         this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, "white", 0.15, "me", this.root.settings.username, this.root.settings.photo));
 
         if(mode === "single mode") {
-            let len = 0;
+            let len = 0, speed = 0.15;
             if(this.game_mode == 0) len = 3;
-            else if(this.game_mode == 1) len = 4;
-            else if(this.game_mode == 2) len = 5;
+            else if(this.game_mode == 1) len = 4, speed = 0.2;
+            else if(this.game_mode == 2) len = 5, speed = 0.2;
             else len = 5;
             for(let i = 0; i < len; i++) {
                 this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, this.get_random_color(), 0.15, "robot"));

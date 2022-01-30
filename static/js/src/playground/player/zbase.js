@@ -139,7 +139,12 @@ class Player extends AcGameObject {
         let vx = Math.cos(angle), vy = Math.sin(angle);
         let color = "orange";
         let speed = 0.5;
+        if(this.playground.game_mode == 1 || this.playground.game_mode == 2) speed = 0.55;
+        else if(this.playground.game_mdoe == 3) speed = 0.6;
         let move_length = 1;
+        if(this.playground.game_mode == 0) move_length = 0.8;
+        else if(this.playground.game_mode == 1 || this.playground.game_mode == 2) move_length = 1;
+        else if(this.playground.game_mode == 3) move_length = 1.3;
         let fireball = new FireBall(this.playground, this, x, y, radius, vx, vy, color, speed, move_length, 0.01);
         this.fireballs.push(fireball);
 
@@ -252,7 +257,7 @@ class Player extends AcGameObject {
         if(this.character === "robot" && this.spent_time > 3 && Math.random() < 1 / 420.0) {
             if(this.fireball_robot_coldtime > this.eps) return false;
             let player = this.playground.players[Math.floor(Math.random() * this.playground.players.length)];
-            if(this.playground.game_mode >= 2 && Math.random() > 0.95) player = this.playground.players[0];     // 若是困难、炼狱难度, 有一定概率优先攻击玩家
+            if(this.playground.game_mode >= 2 && Math.random() >= 0.9) player = this.playground.players[0];     // 若是困难、炼狱难度, 有一定概率优先攻击玩家
             if(player == this) return false;
             let tx = player.x + player.speed * this.vx * this.timedelta / 1000 * 0.3;
             let ty = player.y + player.speed * this.vy * this.timedelta / 1000 * 0.3;

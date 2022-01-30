@@ -33,10 +33,10 @@ class AcGameChooseMode {
         this.mode_item_name = ["入门", "普通", "困难", "炼狱"];
         // 后面补充
         this.mode_item_desc = [
-            "由3个AI构成, 并会无区分的攻击玩家或其他AI, 攻击速度慢、攻击精度适中。",
-            "由4个AI构成, 并会无区分的攻击玩家或其他AI, 攻击速度适中, 攻击精度适中。",
-            "由5个AI构成, 并会大概率攻击玩家, 攻击速度适中, 攻击精度高!",
-            "由5个AI构成, 并会大概率攻击玩家, 攻击速度高, 攻击精度高!!!"
+            "由3个AI构成, 并会无区分的攻击玩家或其他AI, 攻击速度慢、攻击精度适中, 攻击距离低, 移动速度低。",
+            "由4个AI构成, 并会无区分的攻击玩家或其他AI, 攻击速度适中, 攻击精度适中, 攻击距离适中, 移动速度适中。",
+            "由5个AI构成, 并会大概率攻击玩家, 攻击速度适中, 攻击精度高, 攻击距离适中, 移动速度适中!",
+            "由5个AI构成, 并会大概率攻击玩家, 攻击速度高, 攻击精度高, 攻击距离高, 移动速度高!!!"
         ];
 
         this.$return = this.$choose_mode.find('.ac-game-choose-mode-return');
@@ -311,19 +311,81 @@ class ChatField {
         this.playground.game_map.$canvas.focus();
     }
 }
+class Grid extends AcGameObject {
+    constructor(ctx, x, y, l, stroke_color) {
+        super();
+        this.ctx = ctx;
+        this.x = x;
+        this.y = y;
+        this.l = l;
+        this.stroke_color = stroke_color;
+        this.fill_color = "rgb(210, 222, 238)";
+        this.ax = this.x * this.l;
+        this.ay = this.y * this.l;
+    }
+
+    start() {
+
+    }
+
+    update() {
+        this.ctx.save();
+        this.ctx.beginPath();
+        this.ctx.lineWidth = this.l * 0.3;
+        this.ctx.strokeStyle = this.stroke_color;
+        this.ctx.rect(this.ax, this.ay, this.l, this.l);
+        this.ctx.stroke();
+        this.ctx.restore();
+    }
+}
+class Wall extends AcGameObject {
+    constructor(ctx, x, y, l, img_url) {
+        super();
+        this.ctx = ctx;
+        this.x = x;
+        this.y = y;
+        this.l = l;
+        this.ax = this.x * this.l;
+        this.ay = this.y * this.l;
+        this.img = new Image();
+        this.img.src = img_url;
+    }
+
+    start() {
+
+    }
+
+    update() {
+        this.render();
+    }
+
+    render() {
+        this.ctx.save();
+        this.ctx.beginPath();
+        this.ctx.lineWidth = this.l * 0.03;
+        this.ctx.strokeStyle = rgba(0, 0, 0, 0);
+        this.ctx.rect(this.ax, this.ay, this.l, this.l);
+        this.ctx.stroke();
+        this.ctx.clip();
+        this.ctx.drawImage(this.img, this.ax, this.ay, this.l, this.l);
+        this.ctx.restore();
+    }
+}
 class GameMap extends AcGameObject {
     constructor(playground) {
         super();
         this.playground = playground;
         this.$canvas = $(`<canvas tabindex=0></canvas>`)
         this.ctx = this.$canvas[0].getContext('2d');
-        this.ctx.canvas.width = this.playground.width;
-        this.ctx.canvas.height = this.playground.height;
+        this.ctx.canvas.width = this.playground.width * 2;
+        this.ctx.canvas.height = this.playground.height * 2;
         this.playground.$playground.append(this.$canvas);
     }
 
     start() {
         this.$canvas.focus();
+        //this.generate_grid();
+        this.has_called_start = true;
     }
 
     resize() {
@@ -331,6 +393,20 @@ class GameMap extends AcGameObject {
         this.ctx.canvas.height = this.playground.height;
         this.ctx.fillStyle = "rgba(0, 0, 0, 1)";
         this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+    }
+
+    generate_grid() {
+        let width = this.playground.width;
+        let height = this.playground.height;
+        let l = height * 0.1;
+        let nx = Math.ceil(width / l);
+        let ny = Math.ceil(height / l);
+        this.grids = [];
+        for(let i = 0; i < nx; i++) {
+            for(let j = 0; j < ny; j++) {
+                this.grids.push(new Grid(this.ctx, i, j, l, "black"));
+            }
+        }
     }
 
     update() {
@@ -553,7 +629,12 @@ class Player extends AcGameObject {
         let vx = Math.cos(angle), vy = Math.sin(angle);
         let color = "orange";
         let speed = 0.5;
+        if(this.playground.game_mode == 1 || this.playground.game_mode == 2) speed = 0.55;
+        else if(this.playground.game_mdoe == 3) speed = 0.6;
         let move_length = 1;
+        if(this.playground.game_mode == 0) move_length = 0.8;
+        else if(this.playground.game_mode == 1 || this.playground.game_mode == 2) move_length = 1;
+        else if(this.playground.game_mode == 3) move_length = 1.3;
         let fireball = new FireBall(this.playground, this, x, y, radius, vx, vy, color, speed, move_length, 0.01);
         this.fireballs.push(fireball);
 
@@ -666,7 +747,7 @@ class Player extends AcGameObject {
         if(this.character === "robot" && this.spent_time > 3 && Math.random() < 1 / 420.0) {
             if(this.fireball_robot_coldtime > this.eps) return false;
             let player = this.playground.players[Math.floor(Math.random() * this.playground.players.length)];
-            if(this.playground.game_mode >= 2 && Math.random() > 0.95) player = this.playground.players[0];     // 若是困难、炼狱难度, 有一定概率优先攻击玩家
+            if(this.playground.game_mode >= 2 && Math.random() >= 0.9) player = this.playground.players[0];     // 若是困难、炼狱难度, 有一定概率优先攻击玩家
             if(player == this) return false;
             let tx = player.x + player.speed * this.vx * this.timedelta / 1000 * 0.3;
             let ty = player.y + player.speed * this.vy * this.timedelta / 1000 * 0.3;
@@ -1165,10 +1246,10 @@ class AcGamePlayground {
         this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, "white", 0.15, "me", this.root.settings.username, this.root.settings.photo));
 
         if(mode === "single mode") {
-            let len = 0;
+            let len = 0, speed = 0.15;
             if(this.game_mode == 0) len = 3;
-            else if(this.game_mode == 1) len = 4;
-            else if(this.game_mode == 2) len = 5;
+            else if(this.game_mode == 1) len = 4, speed = 0.2;
+            else if(this.game_mode == 2) len = 5, speed = 0.2;
             else len = 5;
             for(let i = 0; i < len; i++) {
                 this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, this.get_random_color(), 0.15, "robot"));
