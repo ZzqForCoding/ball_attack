@@ -312,43 +312,16 @@ class ChatField {
     }
 }
 class Grid extends AcGameObject {
-    constructor(ctx, x, y, l, stroke_color) {
+    constructor(playground, ctx, i, j, ceil_width, color) {
         super();
+        this.playground = playground;
         this.ctx = ctx;
-        this.x = x;
-        this.y = y;
-        this.l = l;
-        this.stroke_color = stroke_color;
-        this.fill_color = "rgb(210, 222, 238)";
-        this.ax = this.x * this.l;
-        this.ay = this.y * this.l;
-    }
-
-    start() {
-
-    }
-
-    update() {
-        this.ctx.save();
-        this.ctx.beginPath();
-        this.ctx.lineWidth = this.l * 0.3;
-        this.ctx.strokeStyle = this.stroke_color;
-        this.ctx.rect(this.ax, this.ay, this.l, this.l);
-        this.ctx.stroke();
-        this.ctx.restore();
-    }
-}
-class Wall extends AcGameObject {
-    constructor(ctx, x, y, l, img_url) {
-        super();
-        this.ctx = ctx;
-        this.x = x;
-        this.y = y;
-        this.l = l;
-        this.ax = this.x * this.l;
-        this.ay = this.y * this.l;
-        this.img = new Image();
-        this.img.src = img_url;
+        this.x = i;
+        this.y = j;
+        this.ceil_width = ceil_width;
+        this.color = color;
+        this.start_x = this.x * this.ceil_width;
+        this.start_y = this.y * this.ceil_width;
     }
 
     start() {
@@ -362,12 +335,10 @@ class Wall extends AcGameObject {
     render() {
         this.ctx.save();
         this.ctx.beginPath();
-        this.ctx.lineWidth = this.l * 0.03;
-        this.ctx.strokeStyle = rgba(0, 0, 0, 0);
-        this.ctx.rect(this.ax, this.ay, this.l, this.l);
+        this.ctx.lineWidth = this.ceil_width * 0.05;
+        this.ctx.strokeStyle = this.color;
+        this.ctx.rect(this.start_x, this.start_y, this.ceil_width, this.ceil_width);
         this.ctx.stroke();
-        this.ctx.clip();
-        this.ctx.drawImage(this.img, this.ax, this.ay, this.l, this.l);
         this.ctx.restore();
     }
 }
@@ -377,15 +348,16 @@ class GameMap extends AcGameObject {
         this.playground = playground;
         this.$canvas = $(`<canvas tabindex=0></canvas>`)
         this.ctx = this.$canvas[0].getContext('2d');
-        this.ctx.canvas.width = this.playground.width * 2;
-        this.ctx.canvas.height = this.playground.height * 2;
+        this.width = this.playground.width;
+        this.height = this.playground.height;
         this.playground.$playground.append(this.$canvas);
+
+        this.start();
     }
 
     start() {
+        this.generate_grid();
         this.$canvas.focus();
-        //this.generate_grid();
-        this.has_called_start = true;
     }
 
     resize() {
@@ -396,15 +368,13 @@ class GameMap extends AcGameObject {
     }
 
     generate_grid() {
-        let width = this.playground.width;
-        let height = this.playground.height;
-        let l = height * 0.1;
-        let nx = Math.ceil(width / l);
-        let ny = Math.ceil(height / l);
+        let ceil_width = this.height * 0.05;
+        let nx = Math.ceil(this.width / ceil_width);
+        let ny = Math.ceil(this.height / ceil_width);
         this.grids = [];
         for(let i = 0; i < nx; i++) {
             for(let j = 0; j < ny; j++) {
-                this.grids.push(new Grid(this.ctx, i, j, l, "black"));
+                this.grids.push(new Grid(this.playground, this.ctx, i, j, ceil_width, "white"));
             }
         }
     }
@@ -414,7 +384,7 @@ class GameMap extends AcGameObject {
     }
 
     render() {
-        this.ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+        this.ctx.fillStyle = "rgba(136, 188, 194)";
         this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
     }
 }
