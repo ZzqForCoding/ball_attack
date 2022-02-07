@@ -6,7 +6,6 @@ class AcGamePlayground {
 
         this.hide();
         this.root.$ac_game.append(this.$playground);
-        this.start();
     }
 
     get_random_color() {
@@ -54,10 +53,14 @@ class AcGamePlayground {
         this.$playground.show();
         this.width = this.$playground.width();
         this.height = this.$playground.height();
-        this.game_map = new GameMap(this);
+
+        this.virtual_map_width = this.virtual_map_height = 3;
 
         this.mode = mode;
         this.state = "waiting";     // waiting -> fighting -> over
+
+        this.game_map = new GameMap(this);
+
         this.notice_board = new NoticeBoard(this);
 
         this.score_board = new ScoreBoard(this);
@@ -67,7 +70,7 @@ class AcGamePlayground {
         this.resize();
 
         this.players = [];
-        this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, "white", 0.15, "me", this.root.settings.username, this.root.settings.photo));
+        this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, "white", 0.175, "me", this.root.settings.username, this.root.settings.photo));
 
         if(mode === "single mode") {
             let len = 0, speed = 0.15;
@@ -76,7 +79,7 @@ class AcGamePlayground {
             else if(this.game_mode == 2) len = 5, speed = 0.2;
             else len = 5;
             for(let i = 0; i < len; i++) {
-                this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, this.get_random_color(), 0.15, "robot"));
+                this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, this.get_random_color(), speed, "robot"));
             }
         } else if(mode === "multi mode") {
             this.chat_field = new ChatField(this);

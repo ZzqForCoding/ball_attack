@@ -333,11 +333,12 @@ class Grid extends AcGameObject {
     }
 
     render() {
+        this.scale = this.playground.scale;
         this.ctx.save();
         this.ctx.beginPath();
-        this.ctx.lineWidth = this.ceil_width * 0.05;
+        this.ctx.lineWidth = this.ceil_width * 0.05 * this.scale;
         this.ctx.strokeStyle = this.color;
-        this.ctx.rect(this.start_x, this.start_y, this.ceil_width, this.ceil_width);
+        this.ctx.rect(this.start_x * this.scale, this.start_y * this.scale, this.ceil_width * this.scale, this.ceil_width * this.scale);
         this.ctx.stroke();
         this.ctx.restore();
     }
@@ -348,33 +349,36 @@ class GameMap extends AcGameObject {
         this.playground = playground;
         this.$canvas = $(`<canvas tabindex=0></canvas>`)
         this.ctx = this.$canvas[0].getContext('2d');
-        this.width = this.playground.width;
-        this.height = this.playground.height;
+        this.ctx.canvas.width = this.playground.width;
+        this.ctx.canvas.height = this.playground.height;
         this.playground.$playground.append(this.$canvas);
 
+        let width = this.playground.virtual_map_width;
+        let height = this.playground.virtual_map_height;
+        this.ceil_width = height * 0.05;
+        this.nx = Math.ceil(width / this.ceil_width);
+        this.ny = Math.ceil(height / this.ceil_width);
         this.start();
     }
 
     start() {
         this.generate_grid();
         this.$canvas.focus();
+        this.has_called_start = true;   // 在ac-game-object不再执行start
     }
 
     resize() {
         this.ctx.canvas.width = this.playground.width;
         this.ctx.canvas.height = this.playground.height;
-        this.ctx.fillStyle = "rgba(0, 0, 0, 1)";
+        this.ctx.fillStyle = "rgba(136, 188, 194, 1)";
         this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
     }
 
     generate_grid() {
-        let ceil_width = this.height * 0.05;
-        let nx = Math.ceil(this.width / ceil_width);
-        let ny = Math.ceil(this.height / ceil_width);
         this.grids = [];
-        for(let i = 0; i < nx; i++) {
-            for(let j = 0; j < ny; j++) {
-                this.grids.push(new Grid(this.playground, this.ctx, i, j, ceil_width, "white"));
+        for(let i = 0; i < this.nx; i++) {
+            for(let j = 0; j < this.ny; j++) {
+                this.grids.push(new Grid(this.playground, this.ctx, i, j, this.ceil_width, "rgb(222, 237, 225)"));
             }
         }
     }
@@ -384,7 +388,7 @@ class GameMap extends AcGameObject {
     }
 
     render() {
-        this.ctx.fillStyle = "rgba(136, 188, 194)";
+        this.ctx.fillStyle = "rgba(136, 188, 194, 0.2)";
         this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
     }
 }
@@ -1152,7 +1156,6 @@ class AcGamePlayground {
 
         this.hide();
         this.root.$ac_game.append(this.$playground);
-        this.start();
     }
 
     get_random_color() {
@@ -1200,10 +1203,14 @@ class AcGamePlayground {
         this.$playground.show();
         this.width = this.$playground.width();
         this.height = this.$playground.height();
-        this.game_map = new GameMap(this);
+
+        this.virtual_map_width = this.virtual_map_height = 3;
 
         this.mode = mode;
         this.state = "waiting";     // waiting -> fighting -> over
+
+        this.game_map = new GameMap(this);
+
         this.notice_board = new NoticeBoard(this);
 
         this.score_board = new ScoreBoard(this);
@@ -1213,7 +1220,7 @@ class AcGamePlayground {
         this.resize();
 
         this.players = [];
-        this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, "white", 0.15, "me", this.root.settings.username, this.root.settings.photo));
+        this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, "white", 0.175, "me", this.root.settings.username, this.root.settings.photo));
 
         if(mode === "single mode") {
             let len = 0, speed = 0.15;
@@ -1222,7 +1229,7 @@ class AcGamePlayground {
             else if(this.game_mode == 2) len = 5, speed = 0.2;
             else len = 5;
             for(let i = 0; i < len; i++) {
-                this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, this.get_random_color(), 0.15, "robot"));
+                this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, this.get_random_color(), speed, "robot"));
             }
         } else if(mode === "multi mode") {
             this.chat_field = new ChatField(this);
