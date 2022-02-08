@@ -54,8 +54,8 @@ class Player extends AcGameObject {
         if(this.character === "me") {
             this.add_listening_events();
         } else if(this.character === "robot") {
-            let tx = Math.random() * this.playground.width / this.playground.scale;
-            let ty = Math.random() * this.playground.height / this.playground.scale;
+            let tx = Math.random() * this.playground.virtual_map_width;
+            let ty = Math.random() * this.playground.virtual_map_height;
             this.move_to(tx, ty);
         }
     }
@@ -70,17 +70,17 @@ class Player extends AcGameObject {
                 return true;
 
             const rect = outer.ctx.canvas.getBoundingClientRect();
+
+            let tx = (e.clientX - rect.left) / outer.playground.scale + outer.playground.cx;
+            let ty = (e.clientY - rect.top) / outer.playground.scale + outer.playground.cy;
+
             if(e.which === 3) {
-                let tx = (e.clientX - rect.left) / outer.playground.scale;
-                let ty = (e.clientY - rect.top) / outer.playground.scale;
                 outer.move_to(tx, ty);
 
                 if(outer.playground.mode === "multi mode") {
                     outer.playground.mps.send_move_to(tx, ty);
                 }
             } else if(e.which === 1) {
-                let tx = (e.clientX - rect.left) / outer.playground.scale;
-                let ty = (e.clientY - rect.top) / outer.playground.scale;
                 if(outer.cur_skill === "fireball") {
                     if(outer.fireball_coldtime > outer.eps)
                         return false;
@@ -223,6 +223,7 @@ class Player extends AcGameObject {
     update() {
         this.spent_time += this.timedelta / 1000;
 
+        if(this.character === "me") this.playground.re_calculate_cx_cy(this.x, this.y);
         this.update_win();
 
         if(this.playground.state === "fighting") {
@@ -289,17 +290,20 @@ class Player extends AcGameObject {
 
     render() {
         let scale = this.playground.scale;
+
+        let ctx_x = this.x - this.playground.cx, ctx_y = this.y - this.playground.cy;
+
         if(this.character !== "robot") {
             this.ctx.save();
             this.ctx.beginPath();
-            this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
+            this.ctx.arc(ctx_x * scale, ctx_y * scale, this.radius * scale, 0, Math.PI * 2, false);
             this.ctx.stroke();
             this.ctx.clip();
-            this.ctx.drawImage(this.img, (this.x - this.radius) * scale, (this.y - this.radius) * scale, this.radius * 2 * scale, this.radius * 2 * scale);
+            this.ctx.drawImage(this.img, (ctx_x - this.radius) * scale, (ctx_y - this.radius) * scale, this.radius * 2 * scale, this.radius * 2 * scale);
             this.ctx.restore();
         } else {
             this.ctx.beginPath();
-            this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
+            this.ctx.arc(ctx_x * scale, ctx_y * scale, this.radius * scale, 0, Math.PI * 2, false);
             this.ctx.fillStyle = this.color;
             this.ctx.fill();
         }

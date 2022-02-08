@@ -2,10 +2,12 @@ class AcGamePlayground {
     constructor(root) {
         this.root = root;
         this.game_mode = 0;
+        this.focus_player = null;
         this.$playground = $(`<div class="ac-game-playground"></div>`);
 
         this.hide();
         this.root.$ac_game.append(this.$playground);
+        this.start();
     }
 
     get_random_color() {
@@ -48,6 +50,20 @@ class AcGamePlayground {
         if(this.chat_field) this.chat_field.resize();
     }
 
+    re_calculate_cx_cy(x, y) {
+        // 玩家所看到的窗口的左上角坐标
+        this.cx = x - 0.5 * this.width / this.scale;
+        this.cy = y - 0.5 * this.height / this.scale;
+        /*
+        let l = this.game_map.l;
+        if(this.focus_player) {
+            this.cx = Math.max(this.cx, -2 * l);
+            this.cx = Math.min(this.cx, this.virtual_map - (this.width / this.scale - 2 * l));
+            this.cy = Math.max(this.cy, -l);
+            this.cy = Math.min(this.cy, this.virtual_map_height - (this.height / this.scale - l));
+        }*/
+    }
+
     show(mode) {    // 打开playground界面
         let outer = this;
         this.$playground.show();
@@ -70,16 +86,32 @@ class AcGamePlayground {
         this.resize();
 
         this.players = [];
-        this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, "white", 0.175, "me", this.root.settings.username, this.root.settings.photo));
+        this.players.push(new Player(this, this.width / 2 / this.scale, this.height / 2 / this.scale, 0.05, "white", 0.175, "me", this.root.settings.username, this.root.settings.photo));
+        this.re_calculate_cx_cy(this.players[0].x, this.players[0].y);
+        this.focus_player = this.players[0];
 
         if(mode === "single mode") {
             let len = 0, speed = 0.15;
-            if(this.game_mode == 0) len = 3;
-            else if(this.game_mode == 1) len = 4, speed = 0.2;
-            else if(this.game_mode == 2) len = 5, speed = 0.2;
-            else len = 5;
+            /**
+             * 3:     .
+             *      .   .
+             *
+             * 4:   .   .
+             *      .   .
+             *
+             * 5:   . . .
+             *      .   .
+             */
+            let a = this.players[0].x, b = this.players[0].y;
+            let dist = 0.4;
+            this.pos = null;
+            if(this.game_mode == 0) len = 3, this.pos = [[0, -dist], [-dist, dist], [dist, dist]];
+            else if(this.game_mode == 1) len = 4, speed = 0.2, this.pos = [[-dist, -dist], [dist, -dist], [-dist, dist], [dist, dist]];
+            else if(this.game_mode == 2) len = 5, speed = 0.2, this.pos = [[-dist, -dist], [0, -dist], [dist, -dist], [-dist, dist], [dist, dist]];
+            else len = 5, this.pos = [[-dist, -dist], [0, -dist], [dist, -dist], [-dist, dist], [dist, dist]];
             for(let i = 0; i < len; i++) {
-                this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, this.get_random_color(), speed, "robot"));
+                let tx = a + this.pos[i][0], ty = b + this.pos[i][1];
+                this.players.push(new Player(this, tx, ty, 0.05, this.get_random_color(), speed, "robot"));
             }
         } else if(mode === "multi mode") {
             this.chat_field = new ChatField(this);

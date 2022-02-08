@@ -334,11 +334,14 @@ class Grid extends AcGameObject {
 
     render() {
         this.scale = this.playground.scale;
+
+        let ctx_x = this.start_x - this.playground.cx, ctx_y = this.start_y - this.playground.cy;
+
         this.ctx.save();
         this.ctx.beginPath();
         this.ctx.lineWidth = this.ceil_width * 0.05 * this.scale;
         this.ctx.strokeStyle = this.color;
-        this.ctx.rect(this.start_x * this.scale, this.start_y * this.scale, this.ceil_width * this.scale, this.ceil_width * this.scale);
+        this.ctx.rect(ctx_x * this.scale, ctx_y * this.scale, this.ceil_width * this.scale, this.ceil_width * this.scale);
         this.ctx.stroke();
         this.ctx.restore();
     }
@@ -388,7 +391,7 @@ class GameMap extends AcGameObject {
     }
 
     render() {
-        this.ctx.fillStyle = "rgba(136, 188, 194, 0.2)";
+        this.ctx.fillStyle = "rgba(136, 188, 194)";
         this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
     }
 }
@@ -456,8 +459,11 @@ class Particle extends AcGameObject {
 
     render() {
         let scale = this.playground.scale;
+
+        let ctx_x = this.x - this.playground.cx, ctx_y = this.y - this.playground.cy;
+
         this.ctx.beginPath();
-        this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
+        this.ctx.arc(ctx_x * scale, ctx_y * scale, this.radius * scale, 0, Math.PI * 2, false);
         this.ctx.fillStyle = this.color;
         this.ctx.fill();
     }
@@ -518,8 +524,8 @@ class Player extends AcGameObject {
         if(this.character === "me") {
             this.add_listening_events();
         } else if(this.character === "robot") {
-            let tx = Math.random() * this.playground.width / this.playground.scale;
-            let ty = Math.random() * this.playground.height / this.playground.scale;
+            let tx = Math.random() * this.playground.virtual_map_width;
+            let ty = Math.random() * this.playground.virtual_map_height;
             this.move_to(tx, ty);
         }
     }
@@ -534,17 +540,17 @@ class Player extends AcGameObject {
                 return true;
 
             const rect = outer.ctx.canvas.getBoundingClientRect();
+
+            let tx = (e.clientX - rect.left) / outer.playground.scale + outer.playground.cx;
+            let ty = (e.clientY - rect.top) / outer.playground.scale + outer.playground.cy;
+
             if(e.which === 3) {
-                let tx = (e.clientX - rect.left) / outer.playground.scale;
-                let ty = (e.clientY - rect.top) / outer.playground.scale;
                 outer.move_to(tx, ty);
 
                 if(outer.playground.mode === "multi mode") {
                     outer.playground.mps.send_move_to(tx, ty);
                 }
             } else if(e.which === 1) {
-                let tx = (e.clientX - rect.left) / outer.playground.scale;
-                let ty = (e.clientY - rect.top) / outer.playground.scale;
                 if(outer.cur_skill === "fireball") {
                     if(outer.fireball_coldtime > outer.eps)
                         return false;
@@ -687,6 +693,7 @@ class Player extends AcGameObject {
     update() {
         this.spent_time += this.timedelta / 1000;
 
+        if(this.character === "me") this.playground.re_calculate_cx_cy(this.x, this.y);
         this.update_win();
 
         if(this.playground.state === "fighting") {
@@ -753,17 +760,20 @@ class Player extends AcGameObject {
 
     render() {
         let scale = this.playground.scale;
+
+        let ctx_x = this.x - this.playground.cx, ctx_y = this.y - this.playground.cy;
+
         if(this.character !== "robot") {
             this.ctx.save();
             this.ctx.beginPath();
-            this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
+            this.ctx.arc(ctx_x * scale, ctx_y * scale, this.radius * scale, 0, Math.PI * 2, false);
             this.ctx.stroke();
             this.ctx.clip();
-            this.ctx.drawImage(this.img, (this.x - this.radius) * scale, (this.y - this.radius) * scale, this.radius * 2 * scale, this.radius * 2 * scale);
+            this.ctx.drawImage(this.img, (ctx_x - this.radius) * scale, (ctx_y - this.radius) * scale, this.radius * 2 * scale, this.radius * 2 * scale);
             this.ctx.restore();
         } else {
             this.ctx.beginPath();
-            this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
+            this.ctx.arc(ctx_x * scale, ctx_y * scale, this.radius * scale, 0, Math.PI * 2, false);
             this.ctx.fillStyle = this.color;
             this.ctx.fill();
         }
@@ -968,8 +978,11 @@ class FireBall extends AcGameObject {
 
     render() {
         let scale = this.playground.scale;
+
+        let ctx_x = this.x - this.playground.cx, ctx_y = this.y - this.playground.cy;
+
         this.ctx.beginPath();
-        this.ctx.arc(this.x * scale, this.y * scale, this.radius * scale, 0, Math.PI * 2, false);
+        this.ctx.arc(ctx_x * scale, ctx_y * scale, this.radius * scale, 0, Math.PI * 2, false);
         this.ctx.fillStyle = this.color;
         this.ctx.fill();
     }
@@ -1152,10 +1165,12 @@ class AcGamePlayground {
     constructor(root) {
         this.root = root;
         this.game_mode = 0;
+        this.focus_player = null;
         this.$playground = $(`<div class="ac-game-playground"></div>`);
 
         this.hide();
         this.root.$ac_game.append(this.$playground);
+        this.start();
     }
 
     get_random_color() {
@@ -1198,6 +1213,20 @@ class AcGamePlayground {
         if(this.chat_field) this.chat_field.resize();
     }
 
+    re_calculate_cx_cy(x, y) {
+        // 玩家所看到的窗口的左上角坐标
+        this.cx = x - 0.5 * this.width / this.scale;
+        this.cy = y - 0.5 * this.height / this.scale;
+        /*
+        let l = this.game_map.l;
+        if(this.focus_player) {
+            this.cx = Math.max(this.cx, -2 * l);
+            this.cx = Math.min(this.cx, this.virtual_map - (this.width / this.scale - 2 * l));
+            this.cy = Math.max(this.cy, -l);
+            this.cy = Math.min(this.cy, this.virtual_map_height - (this.height / this.scale - l));
+        }*/
+    }
+
     show(mode) {    // 打开playground界面
         let outer = this;
         this.$playground.show();
@@ -1220,16 +1249,32 @@ class AcGamePlayground {
         this.resize();
 
         this.players = [];
-        this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, "white", 0.175, "me", this.root.settings.username, this.root.settings.photo));
+        this.players.push(new Player(this, this.width / 2 / this.scale, this.height / 2 / this.scale, 0.05, "white", 0.175, "me", this.root.settings.username, this.root.settings.photo));
+        this.re_calculate_cx_cy(this.players[0].x, this.players[0].y);
+        this.focus_player = this.players[0];
 
         if(mode === "single mode") {
             let len = 0, speed = 0.15;
-            if(this.game_mode == 0) len = 3;
-            else if(this.game_mode == 1) len = 4, speed = 0.2;
-            else if(this.game_mode == 2) len = 5, speed = 0.2;
-            else len = 5;
+            /**
+             * 3:     .
+             *      .   .
+             *
+             * 4:   .   .
+             *      .   .
+             *
+             * 5:   . . .
+             *      .   .
+             */
+            let a = this.players[0].x, b = this.players[0].y;
+            let dist = 0.4;
+            this.pos = null;
+            if(this.game_mode == 0) len = 3, this.pos = [[0, -dist], [-dist, dist], [dist, dist]];
+            else if(this.game_mode == 1) len = 4, speed = 0.2, this.pos = [[-dist, -dist], [dist, -dist], [-dist, dist], [dist, dist]];
+            else if(this.game_mode == 2) len = 5, speed = 0.2, this.pos = [[-dist, -dist], [0, -dist], [dist, -dist], [-dist, dist], [dist, dist]];
+            else len = 5, this.pos = [[-dist, -dist], [0, -dist], [dist, -dist], [-dist, dist], [dist, dist]];
             for(let i = 0; i < len; i++) {
-                this.players.push(new Player(this, this.width / 2 / this.scale, 0.5, 0.05, this.get_random_color(), speed, "robot"));
+                let tx = a + this.pos[i][0], ty = b + this.pos[i][1];
+                this.players.push(new Player(this, tx, ty, 0.05, this.get_random_color(), speed, "robot"));
             }
         } else if(mode === "multi mode") {
             this.chat_field = new ChatField(this);

@@ -21,11 +21,14 @@ class Grid extends AcGameObject {
 
     render() {
         this.scale = this.playground.scale;
+
+        let ctx_x = this.start_x - this.playground.cx, ctx_y = this.start_y - this.playground.cy;
+
         this.ctx.save();
         this.ctx.beginPath();
         this.ctx.lineWidth = this.ceil_width * 0.05 * this.scale;
         this.ctx.strokeStyle = this.color;
-        this.ctx.rect(this.start_x * this.scale, this.start_y * this.scale, this.ceil_width * this.scale, this.ceil_width * this.scale);
+        this.ctx.rect(ctx_x * this.scale, ctx_y * this.scale, this.ceil_width * this.scale, this.ceil_width * this.scale);
         this.ctx.stroke();
         this.ctx.restore();
     }
