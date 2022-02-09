@@ -74,6 +74,13 @@ class Player extends AcGameObject {
             let tx = (e.clientX - rect.left) / outer.playground.scale + outer.playground.cx;
             let ty = (e.clientY - rect.top) / outer.playground.scale + outer.playground.cy;
 
+            if(e.which === 3 || e.which === 1 && outer.cur_skill === "blink") {
+                if(tx < 0) tx = 0;
+                if(tx > outer.playground.virtual_map_width) tx = outer.playground.virtual_map_width;
+                if(ty < 0) ty = 0;
+                if(ty > outer.playground.virtual_map_height) ty = outer.playground.virtual_map_height;
+            }
+
             if(e.which === 3) {
                 outer.move_to(tx, ty);
 
@@ -139,12 +146,10 @@ class Player extends AcGameObject {
         let vx = Math.cos(angle), vy = Math.sin(angle);
         let color = "orange";
         let speed = 0.5;
-        if(this.playground.game_mode == 1 || this.playground.game_mode == 2) speed = 0.55;
-        else if(this.playground.game_mdoe == 3) speed = 0.6;
         let move_length = 1;
         if(this.playground.game_mode == 0) move_length = 0.8;
-        else if(this.playground.game_mode == 1 || this.playground.game_mode == 2) move_length = 1;
-        else if(this.playground.game_mode == 3) move_length = 1.3;
+        else if(this.playground.game_mode == 1 || this.playground.game_mode == 2) move_length = 1, speed = 0.55;
+        else if(this.playground.game_mode == 3) move_length = 1.3, speed = 0.6;
         let fireball = new FireBall(this.playground, this, x, y, radius, vx, vy, color, speed, move_length, 0.01);
         this.fireballs.push(fireball);
 
@@ -270,13 +275,18 @@ class Player extends AcGameObject {
             this.x += this.damage_x * this.damage_speed * this.timedelta / 1000;
             this.y += this.damage_y * this.damage_speed * this.timedelta / 1000;
             this.damage_speed *= this.friction;
+            // 被击退到墙角
+            if(this.x < 0) this.x = 0;
+            if(this.x > this.playground.virtual_map_width) this.x = this.playground.virtual_map_width;
+            if(this.y < 0) this.y = 0;
+            if(this.y > this.playground.virtual_map_height) this.y = this.playground.virtual_map_height;
         } else {
             if(this.move_length < this.eps) {
                 this.move_length = 0;
                 this.vx = this.vy = 0;
                 if(this.character === "robot") {
-                    let tx = Math.random() * this.playground.width / this.playground.scale;
-                    let ty = Math.random() * this.playground.height / this.playground.scale;
+                    let tx = Math.random() * this.playground.virtual_map_width;
+                    let ty = Math.random() * this.playground.virtual_map_height;
                     this.move_to(tx, ty);
                 }
             } else {
