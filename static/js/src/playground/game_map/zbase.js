@@ -10,7 +10,7 @@ class GameMap extends AcGameObject {
 
         let width = this.playground.virtual_map_width;
         let height = this.playground.virtual_map_height;
-        this.ceil_width = height * 0.04;
+        this.ceil_width = height * 0.05;
         this.nx = Math.ceil(width / this.ceil_width);
         this.ny = Math.ceil(height / this.ceil_width);
         this.start();

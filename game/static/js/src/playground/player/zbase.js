@@ -82,6 +82,9 @@ class Player extends AcGameObject {
             }
 
             if(e.which === 3) {
+                for(let i = 0; i < 20; i++) {
+                    new MoveClickParticle(outer.playground, tx, ty, "rgb(209,213,219)");
+                }
                 outer.move_to(tx, ty);
 
                 if(outer.playground.mode === "multi mode") {

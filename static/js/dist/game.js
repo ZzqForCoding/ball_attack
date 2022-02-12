@@ -85,6 +85,8 @@ class AcGameMenu {
         this.root = root;
         this.$menu = $(`
 <div class="ac-game-menu">
+    <audio src="https://app975.acapp.acwing.com.cn/static/audio/BygoneBumps.mp3" class="ac-game-background-music" preload="auto" autoplay="autoplay" loop="loop">
+    </audio>
     <div class="ac-game-menu-field">
         <div class="ac-game-menu-field-item ac-game-menu-field-item-man-machine-mode">
             人机模式
@@ -100,11 +102,20 @@ class AcGameMenu {
     </div>
 </div>
 `);
+
         this.$menu.hide();
         this.root.$ac_game.append(this.$menu);
         this.$single_mode = this.$menu.find('.ac-game-menu-field-item-man-machine-mode');
         this.$multi_mode = this.$menu.find('.ac-game-menu-field-item-multi-mode');
         this.$settings = this.$menu.find('.ac-game-menu-field-item-settings');
+        this.$audio= document.getElementsByClassName('ac-game-background-music')[0];
+        this.$audio.volume = 0.5;
+        this.musics = ["https://app975.acapp.acwing.com.cn/static/audio/BygoneBumps.mp3",
+                       "https://app975.acapp.acwing.com.cn/static/audio/MonsieurMelody.mp3",
+                       "https://app975.acapp.acwing.com.cn/static/audio/SunnyJim.mp3",
+                       "http://music.163.com/song/media/outer/url?id=1307617269.mp3"];
+        this.random_music_idx = Math.floor(Math.random() * this.musics.length);
+        $('.ac-game-background-music').attr('src', this.musics[this.random_music_idx]);
 
         this.start();
     }
@@ -358,7 +369,7 @@ class GameMap extends AcGameObject {
 
         let width = this.playground.virtual_map_width;
         let height = this.playground.virtual_map_height;
-        this.ceil_width = height * 0.04;
+        this.ceil_width = height * 0.05;
         this.nx = Math.ceil(width / this.ceil_width);
         this.ny = Math.ceil(height / this.ceil_width);
         this.start();
@@ -421,6 +432,49 @@ class NoticeBoard extends AcGameObject {
         this.ctx.fillStyle = "white";
         this.ctx.textAlign = "center";
         this.ctx.fillText(this.text, this.playground.width / 2, 20);
+    }
+}
+class MoveClickParticle extends AcGameObject {
+    constructor(playground, x, y, color) {
+        super();
+        this.playground = playground;
+        this.ctx = this.playground.game_map.ctx;
+        this.x = x;
+        this.y = y;
+        this.color = color;
+
+        this.angle = Math.random() * Math.PI * 2;
+        this.vx = Math.cos(this.angle);
+        this.vy = Math.sin(this.angle);
+
+        this.radius = 0.01;
+        this.eps = 0.001;
+    }
+
+    start() {
+
+    }
+
+    update() {
+        if(this.radius < this.eps) {
+            this.destroy();
+            return false;
+        }
+        this.radius *= 0.8;
+        this.x += this.vx * 1.2 / this.playground.scale;
+        this.y += this.vy * 1.2 / this.playground.scale;
+        this.render();
+    }
+
+    render() {
+        let scale = this.playground.scale;
+
+        let ctx_x = this.x - this.playground.cx, ctx_y = this.y - this.playground.cy;
+
+        this.ctx.beginPath();
+        this.ctx.arc(ctx_x * scale, ctx_y * scale, this.radius * scale, 0, Math.PI * 2, false);
+        this.ctx.fillStyle = this.color;
+        this.ctx.fill();
     }
 }
 class Particle extends AcGameObject {
@@ -552,6 +606,9 @@ class Player extends AcGameObject {
             }
 
             if(e.which === 3) {
+                for(let i = 0; i < 20; i++) {
+                    new MoveClickParticle(outer.playground, tx, ty, "rgb(209,213,219)");
+                }
                 outer.move_to(tx, ty);
 
                 if(outer.playground.mode === "multi mode") {
@@ -1208,6 +1265,8 @@ class AcGamePlayground {
                 $(window).off('resize.${uuid}');
             });
         }
+        this.root.menu.$audio.volume = 0.5;
+        this.root.menu.$audio.play();
     }
 
     resize() {
@@ -1243,8 +1302,8 @@ class AcGamePlayground {
         this.width = this.$playground.width();
         this.height = this.$playground.height();
 
-        // 25个格子, 每个格子的宽度是3.75 * 0.04 = 0.15, 25 * 0.15 = 3.75
-        this.virtual_map_width = this.virtual_map_height = 3.75;
+        // 25个格子, 每个格子的宽度是3 * 0.05 = 0.15, 20 * 0.15 = 3
+        this.virtual_map_width = this.virtual_map_height = 3;
 
         this.mode = mode;
         this.state = "waiting";     // waiting -> fighting -> over
