@@ -85,7 +85,7 @@ class AcGameMenu {
         this.root = root;
         this.$menu = $(`
 <div class="ac-game-menu">
-    <audio src="https://app975.acapp.acwing.com.cn/static/audio/BygoneBumps.mp3" class="ac-game-background-music" preload="auto" autoplay="autoplay" loop="loop">
+    <audio src="" class="ac-game-background-music" loop="loop">
     </audio>
     <div class="ac-game-menu-field">
         <div class="ac-game-menu-field-item ac-game-menu-field-item-man-machine-mode">
@@ -109,13 +109,13 @@ class AcGameMenu {
         this.$multi_mode = this.$menu.find('.ac-game-menu-field-item-multi-mode');
         this.$settings = this.$menu.find('.ac-game-menu-field-item-settings');
         this.$audio= document.getElementsByClassName('ac-game-background-music')[0];
-        this.$audio.volume = 0.5;
         this.musics = ["https://app975.acapp.acwing.com.cn/static/audio/BygoneBumps.mp3",
                        "https://app975.acapp.acwing.com.cn/static/audio/MonsieurMelody.mp3",
                        "https://app975.acapp.acwing.com.cn/static/audio/SunnyJim.mp3",
                        "http://music.163.com/song/media/outer/url?id=1307617269.mp3"];
         this.random_music_idx = Math.floor(Math.random() * this.musics.length);
         $('.ac-game-background-music').attr('src', this.musics[this.random_music_idx]);
+        this.$audio.volume = 0.5;
 
         this.start();
     }
@@ -130,14 +130,21 @@ class AcGameMenu {
             outer.hide();
             // outer.root.playground.show("single mode");
             outer.root.choose_mode.show();
+            outer.playMusic();
         });
         this.$multi_mode.click(function() {
             outer.hide();
             outer.root.playground.show("multi mode");
+            outer.playMusic();
         });
         this.$settings.click(function() {
             outer.root.settings.logout_on_remote();
         });
+    }
+
+    // 必须在点击过后才能播放音乐
+    playMusic() {
+        $('.ac-game-background-music').get(0).play();
     }
 
     show() {    // 显示menu界面
@@ -1265,8 +1272,6 @@ class AcGamePlayground {
                 $(window).off('resize.${uuid}');
             });
         }
-        this.root.menu.$audio.volume = 0.5;
-        this.root.menu.$audio.play();
     }
 
     resize() {

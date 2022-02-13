@@ -35,8 +35,6 @@ class AcGamePlayground {
                 $(window).off('resize.${uuid}');
             });
         }
-        this.root.menu.$audio.volume = 0.5;
-        this.root.menu.$audio.play();
     }
 
     resize() {
