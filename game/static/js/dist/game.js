@@ -113,8 +113,6 @@ class AcGameMenu {
                        "https://app975.acapp.acwing.com.cn/static/audio/MonsieurMelody.mp3",
                        "https://app975.acapp.acwing.com.cn/static/audio/SunnyJim.mp3",
                        "http://music.163.com/song/media/outer/url?id=1307617269.mp3"];
-        this.random_music_idx = Math.floor(Math.random() * this.musics.length);
-        $('.ac-game-background-music').attr('src', this.musics[this.random_music_idx]);
         this.$audio.volume = 0.5;
 
         this.start();
@@ -144,6 +142,10 @@ class AcGameMenu {
 
     // 必须在点击过后才能播放音乐
     playMusic() {
+        // 一个页面若有多个acapp开启, 则会播放多个音乐, 这不太好
+        if($('.ac-game-background-music').length > 1) return false;
+        this.random_music_idx = Math.floor(Math.random() * this.musics.length);
+        $('.ac-game-background-music').attr('src', this.musics[this.random_music_idx]);
         $('.ac-game-background-music').get(0).play();
     }
 
@@ -379,6 +381,7 @@ class GameMap extends AcGameObject {
         this.ceil_width = height * 0.05;
         this.nx = Math.ceil(width / this.ceil_width);
         this.ny = Math.ceil(height / this.ceil_width);
+
         this.start();
     }
 
@@ -1120,8 +1123,8 @@ class MultiPlayerSocket {
     receive_create_player(uuid, username, photo) {
         let player = new Player(
             this.playground,
-            this.playground.width / 2 / this.playground.scale,
-            0.5,
+            this.playground.virtual_map_width / 2,
+            this.playground.virtual_map_height / 2,
             0.05,
             "white",
             0.15,
@@ -1324,7 +1327,7 @@ class AcGamePlayground {
         this.resize();
 
         this.players = [];
-        this.players.push(new Player(this, this.width / 2 / this.scale, this.height / 2 / this.scale, 0.05, "white", 0.175, "me", this.root.settings.username, this.root.settings.photo));
+        this.players.push(new Player(this, this.virtual_map_width / 2, this.virtual_map_height / 2, 0.05, "white", 0.175, "me", this.root.settings.username, this.root.settings.photo));
         this.re_calculate_cx_cy(this.players[0].x, this.players[0].y);
 
         if(mode === "single mode") {

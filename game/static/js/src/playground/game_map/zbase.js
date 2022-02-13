@@ -13,6 +13,7 @@ class GameMap extends AcGameObject {
         this.ceil_width = height * 0.05;
         this.nx = Math.ceil(width / this.ceil_width);
         this.ny = Math.ceil(height / this.ceil_width);
+
         this.start();
     }
 

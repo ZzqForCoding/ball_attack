@@ -31,8 +31,6 @@ class AcGameMenu {
                        "https://app975.acapp.acwing.com.cn/static/audio/MonsieurMelody.mp3",
                        "https://app975.acapp.acwing.com.cn/static/audio/SunnyJim.mp3",
                        "http://music.163.com/song/media/outer/url?id=1307617269.mp3"];
-        this.random_music_idx = Math.floor(Math.random() * this.musics.length);
-        $('.ac-game-background-music').attr('src', this.musics[this.random_music_idx]);
         this.$audio.volume = 0.5;
 
         this.start();
@@ -62,6 +60,10 @@ class AcGameMenu {
 
     // 必须在点击过后才能播放音乐
     playMusic() {
+        // 一个页面若有多个acapp开启, 则会播放多个音乐, 这不太好
+        if($('.ac-game-background-music').length > 1) return false;
+        this.random_music_idx = Math.floor(Math.random() * this.musics.length);
+        $('.ac-game-background-music').attr('src', this.musics[this.random_music_idx]);
         $('.ac-game-background-music').get(0).play();
     }
 
