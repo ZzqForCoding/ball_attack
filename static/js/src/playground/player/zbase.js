@@ -329,7 +329,7 @@ class Player extends AcGameObject {
     render_skill_coldtime() {
         let scale = this.playground.scale;
         // 因为scale是height, 画面比例是16:9, 16 / 9 = 1.77
-        let x = 1.5, y = 0.9, r = 0.04;
+        let x = 0.825, y = 0.9, r = 0.04;
 
         // 火球
         this.ctx.save();
@@ -349,7 +349,7 @@ class Player extends AcGameObject {
             this.ctx.fill();
         }
 
-        x = 1.62, y = 0.9, r = 0.04;
+        x = 0.945, y = 0.9, r = 0.04;
         // 闪现
         this.ctx.save();
         this.ctx.beginPath();

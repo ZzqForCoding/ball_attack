@@ -163,7 +163,7 @@
     background-color: grey;
 }
 
-.ac-game-playground > canvas {
+.ac-game-map {
     position: relative;
     top: 50%;
     left: 50%;

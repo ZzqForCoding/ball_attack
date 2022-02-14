@@ -123,6 +123,8 @@ class AcGamePlayground {
             };
         }
 
+        this.mini_map = new MiniMap(this);
+        this.mini_map.resize();
     }
 
     hide() {    // 关闭playground界面

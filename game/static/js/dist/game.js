@@ -370,7 +370,7 @@ class GameMap extends AcGameObject {
     constructor(playground) {
         super();
         this.playground = playground;
-        this.$canvas = $(`<canvas tabindex=0></canvas>`)
+        this.$canvas = $(`<canvas tabindex=0 class="ac-game-map"></canvas>`);
         this.ctx = this.$canvas[0].getContext('2d');
         this.ctx.canvas.width = this.playground.width;
         this.ctx.canvas.height = this.playground.height;
@@ -414,6 +414,53 @@ class GameMap extends AcGameObject {
     render() {
         this.ctx.fillStyle = "rgba(136, 188, 194)";
         this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+    }
+}
+class MiniMap extends AcGameObject {
+    constructor(playground) {
+        super();
+        this.playground = playground;
+        this.$canvas = $(`<canvas class="ac-game-mini_map"></canvas>`);
+        this.ctx = this.$canvas[0].getContext('2d');
+        this.background_color = "rgba(0, 0, 0, 0.3)";
+
+        this.playground.$playground.append(this.$canvas);
+    }
+
+    start() {
+
+    }
+
+    resize() {
+        this.ctx.canvas.width = this.playground.height * 0.35;
+        this.ctx.canvas.height = this.ctx.canvas.width;
+
+        this.start_x = this.playground.width - this.ctx.canvas.width;
+        this.start_y = this.playground.height - this.ctx.canvas.height;
+        this.width = this.ctx.canvas.width;
+        this.height = this.ctx.canvas.height;
+
+        // 要转化成距离整个页面的右边距
+        this.margin_right = (this.playground.$playground.width() - this.playground.width) / 2;
+        this.margin_bottom = (this.playground.$playground.height() - this.playground.height) / 2;
+
+        this.$canvas.css({
+            "position": "absolute",
+            "margin-left": 0,
+            "margin-top": 0
+        });
+    }
+
+    update() {
+        this.render();
+    }
+
+    render() {
+        let scale = this.playground.scale;
+        //this.ctx.clearRect(0, 0, this.width, this.height);
+
+        this.fillStyle = "rgba(255, 0, 0, 0.2)";
+        this.ctx.fillRect(0, 0, this.width, this.height);
     }
 }
 class NoticeBoard extends AcGameObject {
@@ -863,7 +910,7 @@ class Player extends AcGameObject {
     render_skill_coldtime() {
         let scale = this.playground.scale;
         // 因为scale是height, 画面比例是16:9, 16 / 9 = 1.77
-        let x = 1.5, y = 0.9, r = 0.04;
+        let x = 0.825, y = 0.9, r = 0.04;
 
         // 火球
         this.ctx.save();
@@ -883,7 +930,7 @@ class Player extends AcGameObject {
             this.ctx.fill();
         }
 
-        x = 1.62, y = 0.9, r = 0.04;
+        x = 0.945, y = 0.9, r = 0.04;
         // 闪现
         this.ctx.save();
         this.ctx.beginPath();
@@ -1363,6 +1410,8 @@ class AcGamePlayground {
             };
         }
 
+        this.mini_map = new MiniMap(this);
+        this.mini_map.resize();
     }
 
     hide() {    // 关闭playground界面
