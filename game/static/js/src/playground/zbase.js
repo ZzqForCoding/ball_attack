@@ -46,6 +46,7 @@ class AcGamePlayground {
         this.scale = this.height;
 
         if(this.game_map) this.game_map.resize();
+        if(this.mini_map) this.mini_map.resize();
         if(this.chat_field) this.chat_field.resize();
     }
 
@@ -122,7 +123,7 @@ class AcGamePlayground {
                 outer.mps.send_create_player(outer.root.settings.username, outer.root.settings.photo);
             };
         }
-
+        // 等加进来所有东西后再加地图, 要不然会被覆盖
         this.mini_map = new MiniMap(this);
         this.mini_map.resize();
     }
