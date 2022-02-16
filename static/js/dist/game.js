@@ -112,7 +112,11 @@ class AcGameMenu {
         this.musics = ["https://app975.acapp.acwing.com.cn/static/audio/BygoneBumps.mp3",
                        "https://app975.acapp.acwing.com.cn/static/audio/MonsieurMelody.mp3",
                        "https://app975.acapp.acwing.com.cn/static/audio/SunnyJim.mp3",
-                       "http://music.163.com/song/media/outer/url?id=1307617269.mp3"];
+                       "https://app975.acapp.acwing.com.cn/static/audio/qiuqiu.mp3",
+                       "https://app975.acapp.acwing.com.cn/static/audio/AudioHighs.mp3",
+                       "https://app975.acapp.acwing.com.cn/static/audio/BianTaiRuNiu.mp3",
+                       "https://app975.acapp.acwing.com.cn/static/audio/ChuLianXianDingBgm.mp3",
+                       "https://app975.acapp.acwing.com.cn/static/audio/DuoLaAMeng.mp3"];
         this.$audio.volume = 0.5;
 
         this.start();
