@@ -71,7 +71,7 @@ class AcGamePlayground {
         this.width = this.$playground.width();
         this.height = this.$playground.height();
 
-        // 25个格子, 每个格子的宽度是3 * 0.05 = 0.15, 20 * 0.15 = 3
+        // 20个格子, 每个格子的宽度是3 * 0.05 = 0.15, 20 * 0.15 = 3
         this.virtual_map_width = this.virtual_map_height = 3;
 
         this.mode = mode;

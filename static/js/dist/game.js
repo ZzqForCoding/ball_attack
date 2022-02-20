@@ -424,11 +424,11 @@ class MiniMap extends AcGameObject {
     constructor(playground) {
         super();
         this.playground = playground;
-        this.$canvas = $(`<canvas class="ac-game-mini_map"></canvas>`);
+        this.$canvas = $(`<canvas class="ac-game-mini-map"></canvas>`);
         this.ctx = this.$canvas[0].getContext('2d');
         this.background_color = "rgba(0, 0, 0, 0.3)";
 
-        this.players = this.playground.players; // 死了还会画出来吗(赋的是引用还是值)
+        this.players = this.playground.players; // 直接赋值: 非对象属性与对象属性都会被原数组的修改所影响
         this.virtual_map_width = this.virtual_map_height = this.playground.virtual_map_width;
 
         this.mode = this.playground.mode;
@@ -437,7 +437,7 @@ class MiniMap extends AcGameObject {
     }
 
     start() {
-
+        this.add_listening_events();
     }
 
     resize() {
@@ -461,6 +461,13 @@ class MiniMap extends AcGameObject {
         });
     }
 
+    add_listening_events() {
+        let outer = this;
+        this.$canvas.on("contextmenu", function() {
+            return false;
+        });
+    }
+
     update() {
         this.render();
     }
@@ -476,6 +483,7 @@ class MiniMap extends AcGameObject {
             let y = this.players[i].y * this.rate_height;
             let r = this.players[i].radius * this.width;     // 玩家小地图上的半径
             if(i === 0 || this.mode === "multi mode") {
+                if(this.players[0].character !== "me") continue;    // 如果玩家死了, 就不需要绘制了(bug: 在多人模式中, 当前玩家死了后, 所有玩家都不会在小地图绘制)
                 this.ctx.save();
                 this.ctx.beginPath();
                 this.ctx.arc(x, y, r, 0, Math.PI * 2, false);
@@ -491,14 +499,21 @@ class MiniMap extends AcGameObject {
             }
         }
 
+        if(this.players[0].character !== "me") return false;    // 如果当前玩家死了, 就不需要绘制视野了
+        let px = this.players[0].x, py = this.players[0].y;
+        px = Math.max(px, this.playground.width / 2 / scale);
+        px = Math.min(px, (this.virtual_map_width - this.playground.width / 2 / scale));
+        py = Math.max(py, this.playground.height / 2 / scale);
+        py = Math.min(py, (this.virtual_map_height - this.playground.height / 2 / scale));
         // 视野矩形左上角的点
-        let tx = (this.players[0].x - this.playground.width / 2 / scale) * this.rate_width;
-        let ty = (this.players[0].y - this.playground.height / 2 / scale) * this.rate_height;
+        let tx = (px - this.playground.width / 2 / scale) * this.rate_width;
+        let ty = (py - this.playground.height / 2 / scale) * this.rate_height;
+
         // 视野矩形的宽和高
         let w = this.playground.width / scale * this.rate_width;
         let h = this.playground.height / scale * this.rate_height;
         this.ctx.save();
-        this.strokeStyle = "rgba(247, 232, 200, 0.7)";
+        this.ctx.strokeStyle = "rgb(247, 232, 200, 0.7)";
         this.ctx.setLineDash([15, 5]);
         this.ctx.lineWidth = Math.ceil(3 * scale / 1080);
         this.ctx.strokeRect(tx, ty, w, h);
@@ -1400,7 +1415,7 @@ class AcGamePlayground {
         this.width = this.$playground.width();
         this.height = this.$playground.height();
 
-        // 25个格子, 每个格子的宽度是3 * 0.05 = 0.15, 20 * 0.15 = 3
+        // 20个格子, 每个格子的宽度是3 * 0.05 = 0.15, 20 * 0.15 = 3
         this.virtual_map_width = this.virtual_map_height = 3;
 
         this.mode = mode;
