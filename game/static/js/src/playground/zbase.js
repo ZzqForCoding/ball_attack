@@ -89,6 +89,7 @@ class AcGamePlayground {
 
         this.players = [];
         this.players.push(new Player(this, this.virtual_map_width / 2, this.virtual_map_height / 2, 0.05, "white", 0.175, "me", this.root.settings.username, this.root.settings.photo));
+        this.focus_player = this.players[0];
         this.re_calculate_cx_cy(this.players[0].x, this.players[0].y);
 
         if(mode === "single mode") {

@@ -124,6 +124,12 @@ class Player extends AcGameObject {
                 }
             }
 
+            if(e.which === 32) {    // space
+                outer.playground.focus_player = this;
+                outer.playground.re_calculate_cx_cy(outer.x, outer.y);
+                return false;
+            }
+
             if(outer.playground.state !== "fighting")
                 return true;    // 返回false就将监听事件在此消失, 返回true是让父元素处理
 
@@ -231,7 +237,7 @@ class Player extends AcGameObject {
     update() {
         this.spent_time += this.timedelta / 1000;
 
-        if(this.character === "me") this.playground.re_calculate_cx_cy(this.x, this.y);
+        if(this.character === "me" && this.playground.focus_player) this.playground.re_calculate_cx_cy(this.x, this.y);
         this.update_win();
 
         if(this.playground.state === "fighting") {
