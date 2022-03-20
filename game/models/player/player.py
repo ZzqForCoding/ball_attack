@@ -9,4 +9,4 @@ class Player(models.Model):
     score = models.IntegerField(default=1500)
 
     def __str__(self):
-        return str(self.user)
+        return str(self.user) + " " + str(self.score)

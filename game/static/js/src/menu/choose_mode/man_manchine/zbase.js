@@ -3,7 +3,7 @@ class AcGameChooseMode {
         this.root = root;
         this.$choose_mode = $(`
 <div class="ac-game-choose-mode">
-    <div class="ac-game-choose-mode-return">
+    <div class="ac-game-choose-mode-return ac-game-return">
         返回
     </div>
     <div class="ac-game-choose-mode-desc">

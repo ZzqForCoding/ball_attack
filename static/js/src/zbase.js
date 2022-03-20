@@ -7,6 +7,7 @@ export class AcGame {
         this.settings = new Settings(this);
         this.menu = new AcGameMenu(this);
         this.choose_mode = new AcGameChooseMode(this);
+        this.rank = new AcGameRank(this);
         this.playground = new AcGamePlayground(this);
 
         this.start();

@@ -139,6 +139,11 @@ class AcGamePlayground {
             this.game_map = null;
         }
 
+        if(this.mini_map) {
+            this.mini_map.destroy();
+            this.mini_map = null;
+        }
+
         if(this.notice_board) {
             this.notice_board.destroy();
             this.notice_board = null;
