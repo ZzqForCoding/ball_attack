@@ -35,3 +35,12 @@ def get_players(request):
         'result': 'success',
         'players': players,
     })
+
+def get_total_page(request):
+    players = Player.objects.all()
+    paginator = Paginator(players, settings.RANK_LIST_NUM)
+
+    return JsonResponse({
+        'result': 'success',
+        'page_count': paginator.num_pages,
+    })

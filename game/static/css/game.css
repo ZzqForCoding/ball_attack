@@ -260,7 +260,6 @@
 .ac-game-rank-table {
     width: 75%;
     height: 80%;
-    background-color: rgba(242, 242, 242, 0.7);
     position: relative;
     top: 40%;
     left: 50%;
@@ -276,4 +275,22 @@
     font-weight: bold;
     width: 50%;
     float: left;
+    background-color: rgba(242, 242, 242, 0.7);
+}
+
+.ac-game-rank-table-score thead, .ac-game-rank-table-time thead {
+    background-color: rgba(242, 242, 242, 0.7);
+}
+
+.ac-game-rank-table-score tbody, .ac-game-rank-table-time tbody {
+    display: block;
+    height: 60vh;
+    overflow-y: auto;
+    background-color: rgba(242, 242, 242, 0.7);
+}
+
+.ac-game-rank-table-score thead, .ac-game-rank-table-score-tbody tr, .ac-game-rank-table-time thead, .ac-game-rank-table-time tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
 }
