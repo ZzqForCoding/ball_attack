@@ -32,14 +32,14 @@ class AcGameMenu {
         this.$rank = this.$menu.find(".ac-game-menu-field-item-rank");
         this.$settings = this.$menu.find('.ac-game-menu-field-item-settings');
         this.$audio= document.getElementsByClassName('ac-game-background-music')[0];
-        this.musics = ["https://app975.acapp.acwing.com.cn/static/audio/BygoneBumps.mp3",
-                       "https://app975.acapp.acwing.com.cn/static/audio/MonsieurMelody.mp3",
-                       "https://app975.acapp.acwing.com.cn/static/audio/SunnyJim.mp3",
-                       "https://app975.acapp.acwing.com.cn/static/audio/qiuqiu.mp3",
-                       "https://app975.acapp.acwing.com.cn/static/audio/AudioHighs.mp3",
-                       "https://app975.acapp.acwing.com.cn/static/audio/BianTaiRuNiu.mp3",
-                       "https://app975.acapp.acwing.com.cn/static/audio/ChuLianXianDingBgm.mp3",
-                       "https://app975.acapp.acwing.com.cn/static/audio/DuoLaAMeng.mp3"];
+        this.musics = ["https://www.zzqahm.top/static/audio/BygoneBumps.mp3",
+                       "https://www.zzqahm.top/static/audio/MonsieurMelody.mp3",
+                       "https://www.zzqahm.top/static/audio/SunnyJim.mp3",
+                       "https://www.zzqahm.top/static/audio/qiuqiu.mp3",
+                       "https://www.zzqahm.top/static/audio/AudioHighs.mp3",
+                       "https://www.zzqahm.top/static/audio/BianTaiRuNiu.mp3",
+                       "https://www.zzqahm.top/static/audio/ChuLianXianDingBgm.mp3",
+                       "https://www.zzqahm.top/static/audio/DuoLaAMeng.mp3"];
         this.$audio.volume = 0.5;
 
         this.start();

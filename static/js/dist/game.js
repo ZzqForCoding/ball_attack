@@ -237,7 +237,7 @@ class AcGameRank {
     getinfo_rank_score() {
         let outer = this;
         $.ajax({
-            url: "https://app975.acapp.acwing.com.cn/menu/getplayers",
+            url: "https://www.zzqahm.top/menu/getplayers",
             type: "GET",
             success: function(resp) {
                 if(resp.result === "success") {
@@ -256,7 +256,7 @@ class AcGameRank {
         let outer = this;
         this.$time_table_content.empty();
         $.ajax({
-            url: "https://app975.acapp.acwing.com.cn/menu/getplayers/" + outer.page_num,
+            url: "https://www.zzqahm.top/menu/getplayers/" + outer.page_num,
             type: "GET",
             success: function(resp) {
                 if(resp.result === "success") {
@@ -274,7 +274,7 @@ class AcGameRank {
     get_page() {
         let outer = this;
         $.ajax({
-            url: "https://app975.acapp.acwing.com.cn/menu/getpage/",
+            url: "https://www.zzqahm.top/menu/getpage/",
             type: "GET",
             async: false,       // 若不加这行赋值在退出方法后无效
             success: function(resp) {
@@ -328,14 +328,14 @@ class AcGameMenu {
         this.$rank = this.$menu.find(".ac-game-menu-field-item-rank");
         this.$settings = this.$menu.find('.ac-game-menu-field-item-settings');
         this.$audio= document.getElementsByClassName('ac-game-background-music')[0];
-        this.musics = ["https://app975.acapp.acwing.com.cn/static/audio/BygoneBumps.mp3",
-                       "https://app975.acapp.acwing.com.cn/static/audio/MonsieurMelody.mp3",
-                       "https://app975.acapp.acwing.com.cn/static/audio/SunnyJim.mp3",
-                       "https://app975.acapp.acwing.com.cn/static/audio/qiuqiu.mp3",
-                       "https://app975.acapp.acwing.com.cn/static/audio/AudioHighs.mp3",
-                       "https://app975.acapp.acwing.com.cn/static/audio/BianTaiRuNiu.mp3",
-                       "https://app975.acapp.acwing.com.cn/static/audio/ChuLianXianDingBgm.mp3",
-                       "https://app975.acapp.acwing.com.cn/static/audio/DuoLaAMeng.mp3"];
+        this.musics = ["https://www.zzqahm.top/static/audio/BygoneBumps.mp3",
+                       "https://www.zzqahm.top/static/audio/MonsieurMelody.mp3",
+                       "https://www.zzqahm.top/static/audio/SunnyJim.mp3",
+                       "https://www.zzqahm.top/static/audio/qiuqiu.mp3",
+                       "https://www.zzqahm.top/static/audio/AudioHighs.mp3",
+                       "https://www.zzqahm.top/static/audio/BianTaiRuNiu.mp3",
+                       "https://www.zzqahm.top/static/audio/ChuLianXianDingBgm.mp3",
+                       "https://www.zzqahm.top/static/audio/DuoLaAMeng.mp3"];
         this.$audio.volume = 0.5;
 
         this.start();
@@ -1446,7 +1446,7 @@ class MultiPlayerSocket {
     constructor(playground) {
         this.playground = playground;
 
-        this.ws = new WebSocket("wss://app975.acapp.acwing.com.cn/wss/multiplayer/");
+        this.ws = new WebSocket("wss://www.zzqahm.top/wss/multiplayer/");
         this.start();
     }
 
@@ -1769,6 +1769,9 @@ class AcGamePlayground {
 }
 class Settings {
     constructor(root) {
+        if(window.location.host === "app975.acapp.acwing.com.cn") {
+            window.location.replace("https://www.zzqahm.top/");
+        }
         this.root = root;
         this.platform = "WEB";
         if(this.root.AcWingOS) this.platform = "ACAPP";
@@ -1803,7 +1806,7 @@ class Settings {
         </div>
         <br>
         <div class="ac-game-settings-acwing">
-            <img width="30" src="https://app975.acapp.acwing.com.cn/static/image/settings/acwing_logo.png">
+            <img width="30" src="https://www.zzqahm.top/static/image/settings/acwing_logo.png">
             <br>
             <div>
                 AcWing一键登录
@@ -1841,7 +1844,7 @@ class Settings {
         </div>
         <br>
         <div class="ac-game-settings-acwing">
-            <img width="30" src="https://app975.acapp.acwing.com.cn/static/image/settings/acwing_logo.png">
+            <img width="30" src="https://www.zzqahm.top/static/image/settings/acwing_logo.png">
             <br>
             <div>
                 AcWing一键登录
@@ -1916,7 +1919,7 @@ class Settings {
 
     acwing_login() {
         $.ajax({
-            url: "https://app975.acapp.acwing.com.cn/settings/acwing/web/apply_code/",
+            url: "https://www.zzqahm.top/settings/acwing/web/apply_code/",
             type: "GET",
             success: function(resp) {
                 if(resp.result === "success") {
@@ -1933,7 +1936,7 @@ class Settings {
         this.$login_error_message.empty();
 
         $.ajax({
-            url: "https://app975.acapp.acwing.com.cn/settings/login/",
+            url: "https://www.zzqahm.top/settings/login/",
             type: "GET",
             data: {
                 username: username,
@@ -1957,7 +1960,7 @@ class Settings {
         this.$register_error_message.empty();
 
         $.ajax({
-            url: "https://app975.acapp.acwing.com.cn/settings/register/",
+            url: "https://www.zzqahm.top/settings/register/",
             type: "GET",
             data: {
                 username: username,
@@ -1979,7 +1982,7 @@ class Settings {
             this.root.AcWingOS.api.window.close();
         } else {
             $.ajax({
-                url: "https://app975.acapp.acwing.com.cn/settings/logout/",
+                url: "https://www.zzqahm.top/settings/logout/",
                 type: "GET",
                 success: function(resp) {
                     if(resp.result === "success") {
@@ -2015,7 +2018,7 @@ class Settings {
     getinfo_acapp() {
         let outer = this;
         $.ajax({
-            url: "https://app975.acapp.acwing.com.cn/settings/acwing/acapp/apply_code/",
+            url: "https://www.zzqahm.top/settings/acwing/acapp/apply_code/",
             type: "GET",
             success: function(resp) {
                 if(resp.result === "success") {
@@ -2028,7 +2031,7 @@ class Settings {
     getinfo_web() {
         let outer = this;
         $.ajax({
-            url: "https://app975.acapp.acwing.com.cn/settings/getinfo/",
+            url: "https://www.zzqahm.top/settings/getinfo/",
             type: "GET",
             data: {
                 platform: outer.platform,
