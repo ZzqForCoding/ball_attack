@@ -36,12 +36,9 @@ class Settings {
             注册
         </div>
         <br>
-        <div class="ac-game-settings-acwing">
-            <img width="30" src="https://www.zzqahm.top/static/image/settings/acwing_logo.png">
-            <br>
-            <div>
-                AcWing一键登录
-            </div>
+        <div class="ac-game-settings-quick-login">
+            <img src="https://www.zzqahm.top/static/image/settings/acwing_logo.png" class="acwing-logo">
+            <img src="https://www.zzqahm.top/static/image/settings/qq_logo.png" class="qq-logo">
         </div>
     </div>
     <div class="ac-game-settings-register">
@@ -74,12 +71,9 @@ class Settings {
             登录
         </div>
         <br>
-        <div class="ac-game-settings-acwing">
+        <div class="ac-game-settings-quick-login">
             <img width="30" src="https://www.zzqahm.top/static/image/settings/acwing_logo.png">
-            <br>
-            <div>
-                AcWing一键登录
-            </div>
+            <img width="30" src="https://www.zzqahm.top/static/image/settings/qq_logo.png">
         </div>
     </div>
 </div>
@@ -102,7 +96,8 @@ class Settings {
         this.$register_login = this.$register.find(".ac-game-settings-option");
         this.$register.hide();
 
-        this.$acwing_login = this.$settings.find('.ac-game-settings-acwing img');
+        this.$acwing_login = this.$settings.find('.ac-game-settings-quick-login .acwing-logo');
+        this.$qq_login = this.$settings.find('.ac-game-settings-quick-login .qq-logo');
 
         this.root.$ac_game.append(this.$settings);
 
@@ -125,6 +120,9 @@ class Settings {
 
         this.$acwing_login.click(function() {
             outer.acwing_login();
+        });
+        this.$qq_login.click(function() {
+            outer.qq_login();
         });
     }
 
@@ -151,6 +149,18 @@ class Settings {
     acwing_login() {
         $.ajax({
             url: "https://www.zzqahm.top/settings/acwing/web/apply_code/",
+            type: "GET",
+            success: function(resp) {
+                if(resp.result === "success") {
+                    window.location.replace(resp.apply_code_url);
+                }
+            }
+        });
+    }
+
+    qq_login() {
+        $.ajax({
+            url: "https://www.zzqahm.top/settings/qq/apply_code/",
             type: "GET",
             success: function(resp) {
                 if(resp.result === "success") {
