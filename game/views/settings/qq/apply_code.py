@@ -13,7 +13,7 @@ def apply_code(request):
     client_id = "102009232"
     redirect_uri = "https://www.zzqahm.top/settings/qq/receive_code/"
     state = get_state()
-    scode = "get_user_info"
+    scope = "get_user_info"
 
     cache.set(state, True, 7200)    # 有效期两小时
 
