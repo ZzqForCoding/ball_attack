@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from urllib.parse import quote
 from random import randint
 from django.core.cache import cache
 
@@ -11,7 +12,7 @@ def get_state():
 def apply_code(request):
     response_type = "code"
     client_id = "102009232"
-    redirect_uri = "https://www.zzqahm.top/settings/qq/receive_code/"
+    redirect_uri = quote("https://www.zzqahm.top/settings/qq/receive_code/")
     state = get_state()
     scope = "get_user_info"
 
