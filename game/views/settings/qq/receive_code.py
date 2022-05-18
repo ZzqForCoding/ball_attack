@@ -37,7 +37,7 @@ def receive_code(request):
     }
 
     openid_res = requests.get(get_user_openid_url, params=params).json()
-    openid = access_token_res['openid']
+    openid = openid_res['openid']
 
     players = Player.objects.filter(openid=openid)
     if players.exists(): # 如果该用户已存在, 则无需重新获取信息, 直接登录即可
