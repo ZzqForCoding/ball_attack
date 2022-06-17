@@ -1,7 +1,7 @@
 class Settings {
     constructor(root) {
         if(window.location.host === "app975.acapp.acwing.com.cn") {
-            window.location.replace("https://www.zzqahm.top/");
+            window.location.replace("https://game.zzqahm.top/");
         }
         this.root = root;
         this.platform = "WEB";
@@ -37,8 +37,8 @@ class Settings {
         </div>
         <br>
         <div class="ac-game-settings-quick-login">
-            <img src="https://www.zzqahm.top/static/image/settings/acwing_logo.png" class="acwing-logo">
-            <img src="https://www.zzqahm.top/static/image/settings/qq_logo.png" class="qq-logo">
+            <img src="https://game.zzqahm.top/static/image/settings/acwing_logo.png" class="acwing-logo">
+            <img src="https://game.zzqahm.top/static/image/settings/qq_logo.png" class="qq-logo">
         </div>
     </div>
     <div class="ac-game-settings-register">
@@ -72,8 +72,8 @@ class Settings {
         </div>
         <br>
         <div class="ac-game-settings-quick-login">
-            <img width="30" src="https://www.zzqahm.top/static/image/settings/acwing_logo.png">
-            <img width="30" src="https://www.zzqahm.top/static/image/settings/qq_logo.png">
+            <img width="30" src="https://game.zzqahm.top/static/image/settings/acwing_logo.png">
+            <img width="30" src="https://game.zzqahm.top/static/image/settings/qq_logo.png">
         </div>
     </div>
 </div>
@@ -148,7 +148,7 @@ class Settings {
 
     acwing_login() {
         $.ajax({
-            url: "https://www.zzqahm.top/settings/acwing/web/apply_code/",
+            url: "https://game.zzqahm.top/settings/acwing/web/apply_code/",
             type: "GET",
             success: function(resp) {
                 if(resp.result === "success") {
@@ -160,7 +160,7 @@ class Settings {
 
     qq_login() {
         $.ajax({
-            url: "https://www.zzqahm.top/settings/qq/apply_code/",
+            url: "https://game.zzqahm.top/settings/qq/apply_code/",
             type: "GET",
             success: function(resp) {
                 if(resp.result === "success") {
@@ -177,7 +177,7 @@ class Settings {
         this.$login_error_message.empty();
 
         $.ajax({
-            url: "https://www.zzqahm.top/settings/login/",
+            url: "https://game.zzqahm.top/settings/login/",
             type: "GET",
             data: {
                 username: username,
@@ -201,7 +201,7 @@ class Settings {
         this.$register_error_message.empty();
 
         $.ajax({
-            url: "https://www.zzqahm.top/settings/register/",
+            url: "https://game.zzqahm.top/settings/register/",
             type: "GET",
             data: {
                 username: username,
@@ -223,7 +223,7 @@ class Settings {
             this.root.AcWingOS.api.window.close();
         } else {
             $.ajax({
-                url: "https://www.zzqahm.top/settings/logout/",
+                url: "https://game.zzqahm.top/settings/logout/",
                 type: "GET",
                 success: function(resp) {
                     if(resp.result === "success") {
@@ -259,7 +259,7 @@ class Settings {
     getinfo_acapp() {
         let outer = this;
         $.ajax({
-            url: "https://www.zzqahm.top/settings/acwing/acapp/apply_code/",
+            url: "https://game.zzqahm.top/settings/acwing/acapp/apply_code/",
             type: "GET",
             success: function(resp) {
                 if(resp.result === "success") {
@@ -272,7 +272,7 @@ class Settings {
     getinfo_web() {
         let outer = this;
         $.ajax({
-            url: "https://www.zzqahm.top/settings/getinfo/",
+            url: "https://game.zzqahm.top/settings/getinfo/",
             type: "GET",
             data: {
                 platform: outer.platform,

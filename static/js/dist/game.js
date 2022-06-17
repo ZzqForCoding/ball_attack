@@ -237,7 +237,7 @@ class AcGameRank {
     getinfo_rank_score() {
         let outer = this;
         $.ajax({
-            url: "https://www.zzqahm.top/menu/getplayers",
+            url: "https://game.zzqahm.top/menu/getplayers",
             type: "GET",
             success: function(resp) {
                 if(resp.result === "success") {
@@ -256,7 +256,7 @@ class AcGameRank {
         let outer = this;
         this.$time_table_content.empty();
         $.ajax({
-            url: "https://www.zzqahm.top/menu/getplayers/" + outer.page_num,
+            url: "https://game.zzqahm.top/menu/getplayers/" + outer.page_num,
             type: "GET",
             success: function(resp) {
                 if(resp.result === "success") {
@@ -274,7 +274,7 @@ class AcGameRank {
     get_page() {
         let outer = this;
         $.ajax({
-            url: "https://www.zzqahm.top/menu/getpage/",
+            url: "https://game.zzqahm.top/menu/getpage/",
             type: "GET",
             async: false,       // 若不加这行赋值在退出方法后无效
             success: function(resp) {
@@ -328,14 +328,14 @@ class AcGameMenu {
         this.$rank = this.$menu.find(".ac-game-menu-field-item-rank");
         this.$settings = this.$menu.find('.ac-game-menu-field-item-settings');
         this.$audio= document.getElementsByClassName('ac-game-background-music')[0];
-        this.musics = ["https://www.zzqahm.top/static/audio/BygoneBumps.mp3",
-                       "https://www.zzqahm.top/static/audio/MonsieurMelody.mp3",
-                       "https://www.zzqahm.top/static/audio/SunnyJim.mp3",
-                       "https://www.zzqahm.top/static/audio/qiuqiu.mp3",
-                       "https://www.zzqahm.top/static/audio/AudioHighs.mp3",
-                       "https://www.zzqahm.top/static/audio/BianTaiRuNiu.mp3",
-                       "https://www.zzqahm.top/static/audio/ChuLianXianDingBgm.mp3",
-                       "https://www.zzqahm.top/static/audio/DuoLaAMeng.mp3"];
+        this.musics = ["https://game.zzqahm.top/static/audio/BygoneBumps.mp3",
+                       "https://game.zzqahm.top/static/audio/MonsieurMelody.mp3",
+                       "https://game.zzqahm.top/static/audio/SunnyJim.mp3",
+                       "https://game.zzqahm.top/static/audio/qiuqiu.mp3",
+                       "https://game.zzqahm.top/static/audio/AudioHighs.mp3",
+                       "https://game.zzqahm.top/static/audio/BianTaiRuNiu.mp3",
+                       "https://game.zzqahm.top/static/audio/ChuLianXianDingBgm.mp3",
+                       "https://game.zzqahm.top/static/audio/DuoLaAMeng.mp3"];
         this.$audio.volume = 0.5;
 
         this.start();
@@ -1446,7 +1446,7 @@ class MultiPlayerSocket {
     constructor(playground) {
         this.playground = playground;
 
-        this.ws = new WebSocket("wss://www.zzqahm.top/wss/multiplayer/");
+        this.ws = new WebSocket("wss://game.zzqahm.top/wss/multiplayer/");
         this.start();
     }
 
@@ -1770,7 +1770,7 @@ class AcGamePlayground {
 class Settings {
     constructor(root) {
         if(window.location.host === "app975.acapp.acwing.com.cn") {
-            window.location.replace("https://www.zzqahm.top/");
+            window.location.replace("https://game.zzqahm.top/");
         }
         this.root = root;
         this.platform = "WEB";
@@ -1806,8 +1806,8 @@ class Settings {
         </div>
         <br>
         <div class="ac-game-settings-quick-login">
-            <img src="https://www.zzqahm.top/static/image/settings/acwing_logo.png" class="acwing-logo">
-            <img src="https://www.zzqahm.top/static/image/settings/qq_logo.png" class="qq-logo">
+            <img src="https://game.zzqahm.top/static/image/settings/acwing_logo.png" class="acwing-logo">
+            <img src="https://game.zzqahm.top/static/image/settings/qq_logo.png" class="qq-logo">
         </div>
     </div>
     <div class="ac-game-settings-register">
@@ -1841,8 +1841,8 @@ class Settings {
         </div>
         <br>
         <div class="ac-game-settings-quick-login">
-            <img width="30" src="https://www.zzqahm.top/static/image/settings/acwing_logo.png">
-            <img width="30" src="https://www.zzqahm.top/static/image/settings/qq_logo.png">
+            <img width="30" src="https://game.zzqahm.top/static/image/settings/acwing_logo.png">
+            <img width="30" src="https://game.zzqahm.top/static/image/settings/qq_logo.png">
         </div>
     </div>
 </div>
@@ -1917,7 +1917,7 @@ class Settings {
 
     acwing_login() {
         $.ajax({
-            url: "https://www.zzqahm.top/settings/acwing/web/apply_code/",
+            url: "https://game.zzqahm.top/settings/acwing/web/apply_code/",
             type: "GET",
             success: function(resp) {
                 if(resp.result === "success") {
@@ -1929,7 +1929,7 @@ class Settings {
 
     qq_login() {
         $.ajax({
-            url: "https://www.zzqahm.top/settings/qq/apply_code/",
+            url: "https://game.zzqahm.top/settings/qq/apply_code/",
             type: "GET",
             success: function(resp) {
                 if(resp.result === "success") {
@@ -1946,7 +1946,7 @@ class Settings {
         this.$login_error_message.empty();
 
         $.ajax({
-            url: "https://www.zzqahm.top/settings/login/",
+            url: "https://game.zzqahm.top/settings/login/",
             type: "GET",
             data: {
                 username: username,
@@ -1970,7 +1970,7 @@ class Settings {
         this.$register_error_message.empty();
 
         $.ajax({
-            url: "https://www.zzqahm.top/settings/register/",
+            url: "https://game.zzqahm.top/settings/register/",
             type: "GET",
             data: {
                 username: username,
@@ -1992,7 +1992,7 @@ class Settings {
             this.root.AcWingOS.api.window.close();
         } else {
             $.ajax({
-                url: "https://www.zzqahm.top/settings/logout/",
+                url: "https://game.zzqahm.top/settings/logout/",
                 type: "GET",
                 success: function(resp) {
                     if(resp.result === "success") {
@@ -2028,7 +2028,7 @@ class Settings {
     getinfo_acapp() {
         let outer = this;
         $.ajax({
-            url: "https://www.zzqahm.top/settings/acwing/acapp/apply_code/",
+            url: "https://game.zzqahm.top/settings/acwing/acapp/apply_code/",
             type: "GET",
             success: function(resp) {
                 if(resp.result === "success") {
@@ -2041,7 +2041,7 @@ class Settings {
     getinfo_web() {
         let outer = this;
         $.ajax({
-            url: "https://www.zzqahm.top/settings/getinfo/",
+            url: "https://game.zzqahm.top/settings/getinfo/",
             type: "GET",
             data: {
                 platform: outer.platform,

@@ -155,7 +155,7 @@ class AcGameRank {
     getinfo_rank_score() {
         let outer = this;
         $.ajax({
-            url: "https://www.zzqahm.top/menu/getplayers",
+            url: "https://game.zzqahm.top/menu/getplayers",
             type: "GET",
             success: function(resp) {
                 if(resp.result === "success") {
@@ -174,7 +174,7 @@ class AcGameRank {
         let outer = this;
         this.$time_table_content.empty();
         $.ajax({
-            url: "https://www.zzqahm.top/menu/getplayers/" + outer.page_num,
+            url: "https://game.zzqahm.top/menu/getplayers/" + outer.page_num,
             type: "GET",
             success: function(resp) {
                 if(resp.result === "success") {
@@ -192,7 +192,7 @@ class AcGameRank {
     get_page() {
         let outer = this;
         $.ajax({
-            url: "https://www.zzqahm.top/menu/getpage/",
+            url: "https://game.zzqahm.top/menu/getpage/",
             type: "GET",
             async: false,       // 若不加这行赋值在退出方法后无效
             success: function(resp) {
