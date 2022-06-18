@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-4=)ad2j$=3l=mm1jsi6z-70b@pay0xsc^zdi4g8kk_q8gxjj-x
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1", "https://app975.acapp.acwing.com.cn"]
+ALLOWED_HOSTS = ["127.0.0.1", "https://app975.acapp.acwing.com.cn", "game.zzqahm.top"]
 
 
 # Application definition
@@ -40,11 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'corsheaders',
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -157,6 +155,3 @@ CHANNEL_LAYERS = {
 ROOM_CAPACITY = 3
 
 RANK_LIST_NUM = 10
-
-CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_CREDENTIALS = True
