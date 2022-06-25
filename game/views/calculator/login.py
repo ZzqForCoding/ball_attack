@@ -1,8 +1,10 @@
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login
+from django.views.decorators.csrf import csrf_exempt
 
+@csrf_exempt
 def signin(request):
-    data = request.GET
+    data = request.POST
     username = data.get('username')
     password = data.get('password')
     user = authenticate(username=username, password=password)

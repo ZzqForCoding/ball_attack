@@ -2,9 +2,11 @@ from django.http import JsonResponse
 from django.contrib.auth import login
 from django.contrib.auth.models import User
 from game.models.player.player import Player
+from django.views.decorators.csrf import csrf_exempt
 
+@csrf_exempt
 def register(request):
-    data = request.GET
+    data = request.POST
     username = data.get("username", "").strip()
     password = data.get("password", "").strip()
     password_confirm = data.get("password_confirm", "").strip()
