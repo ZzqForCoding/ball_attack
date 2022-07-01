@@ -1,8 +1,12 @@
 from django.urls import path
-from game.views.menu.rank import score_rank
+from game.views.menu.rank.rank_score_page_list import RankScorePageListView
+from game.views.menu.rank.rank_score_list import RankScoreListView
+from game.views.menu.rank.rank_score_total_page import RankScoreTotalPageView
+from game.views.menu.rank.rank_list import RankListView
 
 urlpatterns = [
-    path("getplayers/<int:page>/", score_rank.get_page_players, name="menu_get_score_page_rank"),
-    path("getplayers/", score_rank.get_players, name="menu_get_score_rank"),
-    path("getpage/", score_rank.get_total_page, name="menu_get_page"),
+    path("rank/getplayers/<int:page>/", RankScorePageListView.as_view(), name="menu_get_score_page_rank"),
+    path("rank/getplayers/", RankScoreListView.as_view(), name="menu_get_score_rank"),
+    path("rank/getpage/", RankScoreTotalPageView.as_view(), name="menu_get_page"),
+    path("ranklist/", RankListView.as_view(), name="menu_rank_list"),
 ]

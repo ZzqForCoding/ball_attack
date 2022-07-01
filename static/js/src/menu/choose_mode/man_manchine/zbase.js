@@ -42,7 +42,6 @@ class AcGameChooseMode {
         this.$return = this.$choose_mode.find('.ac-game-choose-mode-return');
         this.$desc = this.$choose_mode.find('ac-game-choose-mode-desc');
         this.$mode_name = this.$choose_mode.find('.ac-game-choose-mode-item-name');
-
         let outer = this;
         this.$mode_name.each(function(i) {
             $(this).text(outer.mode_item_name[i]);
@@ -57,17 +56,15 @@ class AcGameChooseMode {
 
     add_listening_events() {
         let outer = this;
-        this.$return.click(function() {
-            outer.hide();
-            outer.root.menu.show();
+        this.$return.click(() => {
+            this.hide();
+            this.root.menu.show();
         });
         this.$mode_name.each(function(i) {
-            $(this).click(function() {
+            $(this).click(() => {
                 outer.root.playground.game_mode = i;
                 outer.root.playground.show("single mode");
                 outer.hide();
-            });
-            $(this).mouseover(function() {
             });
         });
     }

@@ -44,40 +44,39 @@ class MiniMap extends AcGameObject {
     }
 
     add_listening_events() {
-        let outer = this;
-        this.$canvas.on("contextmenu", function() {
+        this.$canvas.on("contextmenu", () => {
             return false;
         });
-        this.$canvas.mousedown(function(e) {
-            const rect = outer.ctx.canvas.getBoundingClientRect();
-            let tx = (e.clientX - rect.left) / outer.width * outer.virtual_map_width;
-            let ty = (e.clientY - rect.top) / outer.height * outer.virtual_map_height;
+        this.$canvas.mousedown(e => {
+            const rect = this.ctx.canvas.getBoundingClientRect();
+            let tx = (e.clientX - rect.left) / this.width * this.virtual_map_width;
+            let ty = (e.clientY - rect.top) / this.height * this.virtual_map_height;
             if(e.which === 1) {
-                outer.playground.focus_player = null;
-                outer.playground.re_calculate_cx_cy(tx, ty);
-                outer.px = tx;
-                outer.py = ty;
+                this.playground.focus_player = null;
+                this.playground.re_calculate_cx_cy(tx, ty);
+                this.px = tx;
+                this.py = ty;
             } else if(e.which === 3) {
                 // 移动到小地图的指定位置
-                outer.players[0].move_to(tx, ty);
-                if(outer.playground.mode === "multi mode") {
-                    outer.playground.mps.send_move_to(tx, ty);
+                this.players[0].move_to(tx, ty);
+                if(this.playground.mode === "multi mode") {
+                    this.playground.mps.send_move_to(tx, ty);
                 }
             }
         });
-        this.$canvas.mousemove(function(e) {
-            const rect = outer.ctx.canvas.getBoundingClientRect();
-            let tx = (e.clientX - rect.left) / outer.width * outer.virtual_map_width;
-            let ty = (e.clientY - rect.top) / outer.height * outer.virtual_map_height;
+        this.$canvas.mousemove(e => {
+            const rect = this.ctx.canvas.getBoundingClientRect();
+            let tx = (e.clientX - rect.left) / this.width * this.virtual_map_width;
+            let ty = (e.clientY - rect.top) / this.height * this.virtual_map_height;
             if(e.which === 1) {
-                outer.playground.focus_player = null;
-                outer.playground.re_calculate_cx_cy(tx, ty);
-                outer.px = tx;
-                outer.py = ty;
+                this.playground.focus_player = null;
+                this.playground.re_calculate_cx_cy(tx, ty);
+                this.px = tx;
+                this.py = ty;
             }
         });
-        this.$canvas.mouseup(function(e) {
-            outer.playground.game_map.$canvas.focus();
+        this.$canvas.mouseup(e => {
+            this.playground.game_map.$canvas.focus();
         });
     }
 

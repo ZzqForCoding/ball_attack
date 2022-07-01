@@ -123,7 +123,7 @@ SIMPLE_JWT = {
     'UPDATE_LAST_LOGIN': False,
 
     'ALGORITHM': 'HS256',
-    'SIGNING_KEY': "hahaha_secket_key",
+    'SIGNING_KEY': "HI867876Fklsadasdafasdqw",
     'VERIFYING_KEY': None,
     'AUDIENCE': None,
     'ISSUER': None,

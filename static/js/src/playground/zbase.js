@@ -24,14 +24,13 @@ class AcGamePlayground {
     }
 
     start() {
-        let outer = this;
         let uuid = this.create_uuid();
-        $(window).on('resize.${uuid}', function() {
-            outer.resize();
+        $(window).on('resize.${uuid}', () => {
+            this.resize();
         });
 
         if(this.root.AcWingOS) {
-            this.root.AcWingOS.api.window.on_close(function() {
+            this.root.AcWingOS.api.window.on_close(() => {
                 $(window).off('resize.${uuid}');
             });
         }
@@ -66,7 +65,6 @@ class AcGamePlayground {
     }
 
     show(mode) {    // 打开playground界面
-        let outer = this;
         this.$playground.show();
         this.width = this.$playground.width();
         this.height = this.$playground.height();
@@ -120,8 +118,8 @@ class AcGamePlayground {
             this.mps = new MultiPlayerSocket(this);
             this.mps.uuid = this.players[0].uuid;
 
-            this.mps.ws.onopen = function() {
-                outer.mps.send_create_player(outer.root.settings.username, outer.root.settings.photo);
+            this.mps.ws.onopen = () => {
+                this.mps.send_create_player(this.root.settings.username, this.root.settings.photo);
             };
         }
         // 等加进来所有东西后再加地图, 要不然会被覆盖

@@ -21,23 +21,21 @@ class ChatField {
     }
 
     add_listening_events() {
-        let outer = this;
-
-        this.$history.mousedown(function(e) {
+        this.$history.mousedown(e => {
             return true;
         });
 
-        this.$input.keydown(function(e) {
+        this.$input.keydown(e => {
             if(e.which === 27) {    // esc
-                outer.hide_input();
+                this.hide_input();
                 return false;
             } else if(e.which == 13) {  // enter
-                let username = outer.playground.root.settings.username;
-                let text = outer.$input.val();
+                let username = this.playground.root.settings.username;
+                let text = this.$input.val();
                 if(text) {
-                    outer.$input.val("");
-                    outer.add_message(username, text);
-                    outer.playground.mps.send_message(username, text);
+                    this.$input.val("");
+                    this.add_message(username, text);
+                    this.playground.mps.send_message(username, text);
                 }
                 return false;   //回车事件在此函数处理, 不向上传递
             }
@@ -76,14 +74,13 @@ class ChatField {
     }
 
     show_history() {
-        let outer = this;
         this.$history.fadeIn();
 
         if(this.func_id) clearTimeout(this.func_id);
 
-        this.func_id = setTimeout(function() {
-            outer.$history.fadeOut();
-            outer.func_id = null;
+        this.func_id = setTimeout(() => {
+            this.$history.fadeOut();
+            this.func_id = null;
         }, 3000);
     }
 

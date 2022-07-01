@@ -2,7 +2,7 @@ class MultiPlayerSocket {
     constructor(playground) {
         this.playground = playground;
 
-        this.ws = new WebSocket("wss://game.zzqahm.top/wss/multiplayer/");
+        this.ws = new WebSocket("wss://game.zzqahm.top/wss/multiplayer/?token=" + this.playground.root.access);
         this.start();
     }
 
@@ -11,34 +11,32 @@ class MultiPlayerSocket {
     }
 
     receive() {
-        let outer = this;
-        this.ws.onmessage = function(e) {
+        this.ws.onmessage = e => {
             let data = JSON.parse(e.data);
             let uuid = data.uuid;
-            if(uuid === outer.uuid) return false;
+            if(uuid === this.uuid) return false;
 
             let event = data.event;
             if(event === "create_player") {
-                outer.receive_create_player(uuid, data.username, data.photo);
+                this.receive_create_player(uuid, data.username, data.photo);
             } else if(event === "move_to") {
-                outer.receive_move_to(uuid, data.tx, data.ty);
+                this.receive_move_to(uuid, data.tx, data.ty);
             } else if(event === "shoot_fireball") {
-                outer.receive_shoot_fireball(uuid, data.ball_uuid, data.tx, data.ty);
+                this.receive_shoot_fireball(uuid, data.ball_uuid, data.tx, data.ty);
             } else if(event === "attack") {
-                outer.receive_attack(uuid, data.attackee_uuid, data.x, data.y, data.angle, data.damage, data.ball_uuid);
+                this.receive_attack(uuid, data.attackee_uuid, data.x, data.y, data.angle, data.damage, data.ball_uuid);
             } else if(event === "blink") {
-                outer.receive_blink(uuid, data.tx, data.ty);
+                this.receive_blink(uuid, data.tx, data.ty);
             } else if(event === "message") {
-                outer.receive_message(uuid, data.username, data.text);
+                this.receive_message(uuid, data.username, data.text);
             }
         };
     }
 
     send_create_player(username, photo) {
-        let outer = this;
         this.ws.send(JSON.stringify({
             'event': "create_player",
-            'uuid': outer.uuid,
+            'uuid': this.uuid,
             'username': username,
             'photo': photo,
         }));
@@ -73,10 +71,9 @@ class MultiPlayerSocket {
     }
 
     send_move_to(tx, ty) {
-        let outer = this;
         this.ws.send(JSON.stringify({
             'event': "move_to",
-            'uuid': outer.uuid,
+            'uuid': this.uuid,
             'tx': tx,
             'ty': ty,
         }));
@@ -91,10 +88,9 @@ class MultiPlayerSocket {
     }
 
     send_shoot_fireball(ball_uuid, tx, ty) {
-        let outer = this;
         this.ws.send(JSON.stringify({
             'event': "shoot_fireball",
-            'uuid': outer.uuid,
+            'uuid': this.uuid,
             'ball_uuid': ball_uuid,
             'tx': tx,
             'ty': ty,
@@ -110,10 +106,9 @@ class MultiPlayerSocket {
     }
 
     send_attack(attackee_uuid, x, y, angle, damage, ball_uuid) {
-        let outer = this;
         this.ws.send(JSON.stringify({
             'event': "attack",
-            'uuid': outer.uuid,
+            'uuid': this.uuid,
             'attackee_uuid': attackee_uuid,
             'x': x,
             'y': y,
@@ -132,10 +127,9 @@ class MultiPlayerSocket {
     }
 
     send_blink(tx, ty) {
-        let outer = this;
         this.ws.send(JSON.stringify({
             'event': "blink",
-            'uuid': outer.uuid,
+            'uuid': this.uuid,
             'tx': tx,
             'ty': ty,
         }));
@@ -149,10 +143,9 @@ class MultiPlayerSocket {
     }
 
     send_message(username, text) {
-        let outer = this;
         this.ws.send(JSON.stringify({
             'event': "message",
-            'uuid': outer.uuid,
+            'uuid': this.uuid,
             'username': username,
             'text': text,
         }));

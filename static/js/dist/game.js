@@ -42,7 +42,6 @@ class AcGameChooseMode {
         this.$return = this.$choose_mode.find('.ac-game-choose-mode-return');
         this.$desc = this.$choose_mode.find('ac-game-choose-mode-desc');
         this.$mode_name = this.$choose_mode.find('.ac-game-choose-mode-item-name');
-
         let outer = this;
         this.$mode_name.each(function(i) {
             $(this).text(outer.mode_item_name[i]);
@@ -57,17 +56,15 @@ class AcGameChooseMode {
 
     add_listening_events() {
         let outer = this;
-        this.$return.click(function() {
-            outer.hide();
-            outer.root.menu.show();
+        this.$return.click(() => {
+            this.hide();
+            this.root.menu.show();
         });
         this.$mode_name.each(function(i) {
-            $(this).click(function() {
+            $(this).click(() => {
                 outer.root.playground.game_mode = i;
                 outer.root.playground.show("single mode");
                 outer.hide();
-            });
-            $(this).mouseover(function() {
             });
         });
     }
@@ -90,7 +87,7 @@ class AcGameRank {
     </div>
     <div class="ac-game-rank-table">
         <div class="ac-game-rank-table-button">
-            <button type="button" class="btn btn-outline-secondary ac-game-rank-table-button-score">多人模式积分滚动条排行榜</button>
+            <button type="button" class="btn btn-outline-secondary ac-game-rank-table-button-score">多人模式积分滚动条排行榜(每五分钟并点击排行榜重新加载数据)</button>
             <button type="button" class="btn btn-outline-secondary ac-game-rank-table-button-time">多人模式积分分页排行榜</button>
         </div>
         <div class="ac-game-rank-tables">
@@ -139,27 +136,26 @@ class AcGameRank {
         this.page_num = 1;      // 当前处于的页号
         this.total_page = 0;    // 总页号
         this.show_page = 3;     // 显示的页码为三个
-        this.get_page();        // 查询总页号
         this.generic_page();    // 生成所有页码
 
         this.$time_table_page_btn = this.$rank.find('.ac-game-rank-table-time-page-num');
         this.$time_table_page_pre = this.$rank.find('.ac-game-rank-table-time-page-pre');
         this.$time_table_page_next = this.$rank.find('.ac-game-rank-table-time-page-next');
 
-        this.modify_page();    // 将不显示的页码隐藏
         this.start();
+
+        this.score_player = null;
+        this.score_player_time = null;
     }
 
     start() {
-        this.getinfo_rank_score();
         this.add_listening_events();
     }
 
     add_listening_events() {
-        let outer = this;
-        this.$return.click(function() {
-            outer.hide();
-            outer.root.menu.show();
+        this.$return.click(() => {
+            this.hide();
+            this.root.menu.show();
         });
 
         // 待优化: 两个按钮为一组，多次按同一个不要发请求
@@ -167,45 +163,43 @@ class AcGameRank {
         // 分页条固定在那, 页码跳转要有颜色
         // 可以点一个按钮跳到自己所在页面与位置
         // 生存时间排行榜
-        this.$score_btn.click(function() {
-            outer.$score_table.show();
-            outer.$time_table.hide();
-            outer.$time_table_page.hide();
+        this.$score_btn.click(() => {
+            this.$score_table.show();
+            this.$time_table.hide();
+            this.$time_table_page.hide();
         });
 
-        this.$time_btn.click(function() {
-            outer.$score_table.hide();
-            outer.$time_table.show();
-            outer.$time_table_page.show();
-            outer.getinfo_rank_time();
+        this.$time_btn.click(() => {
+            this.$score_table.hide();
+            this.$time_table.show();
+            this.$time_table_page.show();
+            this.getinfo_rank_time();
         });
+        let outer = this;
         $.each(this.$time_table_page_btn, function() {
-            $(this).click(function() {
-                outer.page_num = $(this).text();
-                outer.modify_page();
+            $(this).click(() => {
+                outer.page_num = parseInt($(this).text());
                 outer.getinfo_rank_time();
             });
         });
 
-        this.$time_table_page_pre.click(function() {
-            outer.page_num = outer.page_num - 1;
-            if(outer.page_num === 0) outer.page_num = outer.total_page;
-            outer.modify_page();
-            outer.getinfo_rank_time();
+        this.$time_table_page_pre.click(() => {
+            this.page_num = this.page_num - 1;
+            if(this.page_num === 0) this.page_num = this.total_page;
+            this.getinfo_rank_time();
         });
 
-        this.$time_table_page_next.click(function() {
-            outer.page_num = outer.page_num + 1;
-            if(outer.page_num == outer.total_page + 1) outer.page_num = 1;
-            outer.modify_page();
-            outer.getinfo_rank_time();
+        this.$time_table_page_next.click(() => {
+            this.page_num = this.page_num + 1;
+            if(this.page_num == this.total_page + 1) this.page_num = 1;
+            this.getinfo_rank_time();
         });
     }
 
     generic_page() {
         this.$pagination.append("<li><a href=\"javascript:void(0)\" class=\"ac-game-rank-table-time-page-pre\" aria-label=\"Previous\"><span aria-hidden=\"true\">&laquo;</span></a></li>");
 
-        for(let i = 1; i <= this.total_page; i++) {
+        for(let i = 1; i <= this.show_page; i++) {
             this.$pagination.append("<li><a href=\"javascript:void(0)\" class=\"ac-game-rank-table-time-page-num\">" + i + "</a></li>");
         }
 
@@ -213,12 +207,7 @@ class AcGameRank {
     }
 
     modify_page() {
-        // 先把所有隐藏页码
-        $.each(this.$time_table_page_btn, function() {
-            $(this).hide();
-        });
-        // 再把this.show_page个页码显示出来, 将this.page_num始终保持在中间, 若this.page_num为3, this.show_page为3则2 3 4, this.show_page为4则2 3 4 5
-
+        // 将this.page_num始终保持在中间, 若this.page_num为3, this.show_page为3则2 3 4, this.show_page为4则2 3 4 5
         let start = null, end = null;
         if(this.page_num < this.show_page) start = 1, end = this.show_page;
         else if(this.page_num > this.total_page - this.show_page) start = this.total_page - this.show_page + 1, end = this.total_page;
@@ -226,26 +215,29 @@ class AcGameRank {
             start = this.page_num - this.show_page / 2; // 5 - 3 / 2 ~ 5 + 3 / 2 => 4 5 6, 5 - 4 / 2 ~ 5 + 4 / 2 => 3 4 5 6 7
             end = this.page_num + (this.show_page % 2 == 0 ? this.show_page / 2 - 1 : this.show_page / 2);
         }
-        $.each(this.$time_table_page_btn, function() {
-            let val = $(this).text();
-            if(val >= start && val <= end) {
-                $(this).show();
-            }
+        start = Math.ceil(start);
+        $.each(this.$time_table_page_btn, function(i) {
+            $(this).text(start + i);
         });
     }
 
     getinfo_rank_score() {
-        let outer = this;
+        if(this.score_player && this.score_player_time && new Date().getTime() - this.score_player_time.getTime() <= 5 * 60 * 1000) return;
+        this.$score_table_content.empty();
         $.ajax({
-            url: "https://game.zzqahm.top/menu/getplayers",
+            url: "https://game.zzqahm.top/menu/rank/getplayers/",
             type: "GET",
-            success: function(resp) {
+            headers: {
+                "Authorization": "Bearer " + this.root.access,
+            },
+            success: resp => {
                 if(resp.result === "success") {
-                    let players = resp.players;
-                    for(let i = 0; i < players.length; i++) {
-                        let player = players[i];
+                    this.score_player = resp.players;
+                    this.score_player_time = new Date();
+                    for(let i = 0; i < this.score_player.length; i++) {
+                        let player = this.score_player[i];
                         let obj = "<tr><td>" + (i + 1)  + "</td><td><img src=" + player.photo + " alt=\"photo\"  width=\"33px\" height=\"33px\" style=\"border-radius:100%; margin-left:6%\"> " + player.name + "</td><td>" + player.score + "</td></tr>";
-                        outer.$score_table_content.append(obj);
+                        this.$score_table_content.append(obj);
                     }
                 }
             }
@@ -253,18 +245,23 @@ class AcGameRank {
     }
 
     getinfo_rank_time() {
-        let outer = this;
         this.$time_table_content.empty();
+        this.get_page();        // 查询总页号
+        this.modify_page();    // 修改页码
+
         $.ajax({
-            url: "https://game.zzqahm.top/menu/getplayers/" + outer.page_num,
+            url: "https://game.zzqahm.top/menu/rank/getplayers/" + this.page_num + "/",
             type: "GET",
-            success: function(resp) {
+            headers: {
+                "Authorization": "Bearer " + this.root.access,
+            },
+            success: resp => {
                 if(resp.result === "success") {
                     let players = resp.players;
                     for(let i = 0; i < players.length; i++) {
                         let player = players[i];
-                        let obj = "<tr><td>" + ((outer.page_num - 1) * 10 + i + 1)  + "</td><td><img src=" + player.photo + " alt=\"photo\"  width=\"33px\" height=\"33px\" style=\"border-radius:100%; margin-left:6%\"> " + player.name + "</td><td>" + player.score + "</td></tr>";
-                        outer.$time_table_content.append(obj);
+                        let obj = "<tr><td>" + ((this.page_num - 1) * 10 + i + 1)  + "</td><td><img src=" + player.photo + " alt=\"photo\"  width=\"33px\" height=\"33px\" style=\"border-radius:100%; margin-left:6%\"> " + player.name + "</td><td>" + player.score + "</td></tr>";
+                        this.$time_table_content.append(obj);
                     }
                 }
             }
@@ -272,20 +269,23 @@ class AcGameRank {
     }
 
     get_page() {
-        let outer = this;
         $.ajax({
-            url: "https://game.zzqahm.top/menu/getpage/",
+            url: "https://game.zzqahm.top/menu/rank/getpage/",
             type: "GET",
+            headers: {
+                "Authorization": "Bearer " + this.root.access,
+            },
             async: false,       // 若不加这行赋值在退出方法后无效
-            success: function(resp) {
+            success: resp => {
                 if(resp.result === "success") {
-                    outer.total_page = resp.page_count;
+                    this.total_page = resp.page_count;
                 }
             }
         });
     }
 
     show() {
+        this.getinfo_rank_score();
         this.$rank.show();
         this.$score_btn.click();
     }
@@ -346,24 +346,22 @@ class AcGameMenu {
     }
 
     add_listening_events() {
-        let outer = this;
-        this.$single_mode.click(function() {
-            outer.hide();
-            // outer.root.playground.show("single mode");
-            outer.root.choose_mode.show();
-            outer.playMusic();
+        this.$single_mode.click(() => {
+            this.hide();
+            this.root.choose_mode.show();
+            this.playMusic();
         });
-        this.$multi_mode.click(function() {
-            outer.hide();
-            outer.root.playground.show("multi mode");
-            outer.playMusic();
+        this.$multi_mode.click(() => {
+            this.hide();
+            this.root.playground.show("multi mode");
+            this.playMusic();
         });
-        this.$rank.click(function() {
-            outer.hide();
-            outer.root.rank.show();
+        this.$rank.click(() => {
+            this.hide();
+            this.root.rank.show();
         });
-        this.$settings.click(function() {
-            outer.root.settings.logout_on_remote();
+        this.$settings.click(() => {
+            this.root.settings.logout_on_remote();
         });
     }
 
@@ -433,7 +431,7 @@ class AcGameObject {
 }
 
 let last_timestamp;
-let AC_GAME_ANIMATION = function(timestamp) {
+let AC_GAME_ANIMATION = timestamp => {
 
     for(let i = 0; i < AC_GAME_OBJECTS.length; i++) {
         let obj = AC_GAME_OBJECTS[i];
@@ -480,23 +478,21 @@ class ChatField {
     }
 
     add_listening_events() {
-        let outer = this;
-
-        this.$history.mousedown(function(e) {
+        this.$history.mousedown(e => {
             return true;
         });
 
-        this.$input.keydown(function(e) {
+        this.$input.keydown(e => {
             if(e.which === 27) {    // esc
-                outer.hide_input();
+                this.hide_input();
                 return false;
             } else if(e.which == 13) {  // enter
-                let username = outer.playground.root.settings.username;
-                let text = outer.$input.val();
+                let username = this.playground.root.settings.username;
+                let text = this.$input.val();
                 if(text) {
-                    outer.$input.val("");
-                    outer.add_message(username, text);
-                    outer.playground.mps.send_message(username, text);
+                    this.$input.val("");
+                    this.add_message(username, text);
+                    this.playground.mps.send_message(username, text);
                 }
                 return false;   //回车事件在此函数处理, 不向上传递
             }
@@ -535,14 +531,13 @@ class ChatField {
     }
 
     show_history() {
-        let outer = this;
         this.$history.fadeIn();
 
         if(this.func_id) clearTimeout(this.func_id);
 
-        this.func_id = setTimeout(function() {
-            outer.$history.fadeOut();
-            outer.func_id = null;
+        this.func_id = setTimeout(() => {
+            this.$history.fadeOut();
+            this.func_id = null;
         }, 3000);
     }
 
@@ -689,40 +684,39 @@ class MiniMap extends AcGameObject {
     }
 
     add_listening_events() {
-        let outer = this;
-        this.$canvas.on("contextmenu", function() {
+        this.$canvas.on("contextmenu", () => {
             return false;
         });
-        this.$canvas.mousedown(function(e) {
-            const rect = outer.ctx.canvas.getBoundingClientRect();
-            let tx = (e.clientX - rect.left) / outer.width * outer.virtual_map_width;
-            let ty = (e.clientY - rect.top) / outer.height * outer.virtual_map_height;
+        this.$canvas.mousedown(e => {
+            const rect = this.ctx.canvas.getBoundingClientRect();
+            let tx = (e.clientX - rect.left) / this.width * this.virtual_map_width;
+            let ty = (e.clientY - rect.top) / this.height * this.virtual_map_height;
             if(e.which === 1) {
-                outer.playground.focus_player = null;
-                outer.playground.re_calculate_cx_cy(tx, ty);
-                outer.px = tx;
-                outer.py = ty;
+                this.playground.focus_player = null;
+                this.playground.re_calculate_cx_cy(tx, ty);
+                this.px = tx;
+                this.py = ty;
             } else if(e.which === 3) {
                 // 移动到小地图的指定位置
-                outer.players[0].move_to(tx, ty);
-                if(outer.playground.mode === "multi mode") {
-                    outer.playground.mps.send_move_to(tx, ty);
+                this.players[0].move_to(tx, ty);
+                if(this.playground.mode === "multi mode") {
+                    this.playground.mps.send_move_to(tx, ty);
                 }
             }
         });
-        this.$canvas.mousemove(function(e) {
-            const rect = outer.ctx.canvas.getBoundingClientRect();
-            let tx = (e.clientX - rect.left) / outer.width * outer.virtual_map_width;
-            let ty = (e.clientY - rect.top) / outer.height * outer.virtual_map_height;
+        this.$canvas.mousemove(e => {
+            const rect = this.ctx.canvas.getBoundingClientRect();
+            let tx = (e.clientX - rect.left) / this.width * this.virtual_map_width;
+            let ty = (e.clientY - rect.top) / this.height * this.virtual_map_height;
             if(e.which === 1) {
-                outer.playground.focus_player = null;
-                outer.playground.re_calculate_cx_cy(tx, ty);
-                outer.px = tx;
-                outer.py = ty;
+                this.playground.focus_player = null;
+                this.playground.re_calculate_cx_cy(tx, ty);
+                this.px = tx;
+                this.py = ty;
             }
         });
-        this.$canvas.mouseup(function(e) {
-            outer.playground.game_map.$canvas.focus();
+        this.$canvas.mouseup(e => {
+            this.playground.game_map.$canvas.focus();
         });
     }
 
@@ -957,88 +951,87 @@ class Player extends AcGameObject {
     }
 
     add_listening_events() {
-        let outer = this;
-        this.playground.game_map.$canvas.on("contextmenu", function() {
+        this.playground.game_map.$canvas.on("contextmenu", () => {
             return false;
         });
-        this.playground.game_map.$canvas.mousedown(function(e) {
-            if(outer.playground.state !== "fighting")
+        this.playground.game_map.$canvas.mousedown(e => {
+            if(this.playground.state !== "fighting")
                 return true;
 
-            const rect = outer.ctx.canvas.getBoundingClientRect();
+            const rect = this.ctx.canvas.getBoundingClientRect();
 
-            let tx = (e.clientX - rect.left) / outer.playground.scale + outer.playground.cx;
-            let ty = (e.clientY - rect.top) / outer.playground.scale + outer.playground.cy;
+            let tx = (e.clientX - rect.left) / this.playground.scale + this.playground.cx;
+            let ty = (e.clientY - rect.top) / this.playground.scale + this.playground.cy;
 
-            if(e.which === 3 || e.which === 1 && outer.cur_skill === "blink") {
+            if(e.which === 3 || e.which === 1 && this.cur_skill === "blink") {
                 if(tx < 0) tx = 0;
-                if(tx > outer.playground.virtual_map_width) tx = outer.playground.virtual_map_width;
+                if(tx > this.playground.virtual_map_width) tx = this.playground.virtual_map_width;
                 if(ty < 0) ty = 0;
-                if(ty > outer.playground.virtual_map_height) ty = outer.playground.virtual_map_height;
+                if(ty > this.playground.virtual_map_height) ty = this.playground.virtual_map_height;
             }
 
             if(e.which === 3) {
                 for(let i = 0; i < 20; i++) {
-                    new MoveClickParticle(outer.playground, tx, ty, "rgb(209,213,219)");
+                    new MoveClickParticle(this.playground, tx, ty, "rgb(209,213,219)");
                 }
-                outer.move_to(tx, ty);
+                this.move_to(tx, ty);
 
-                if(outer.playground.mode === "multi mode") {
-                    outer.playground.mps.send_move_to(tx, ty);
+                if(this.playground.mode === "multi mode") {
+                    this.playground.mps.send_move_to(tx, ty);
                 }
             } else if(e.which === 1) {
-                if(outer.cur_skill === "fireball") {
-                    if(outer.fireball_coldtime > outer.eps)
+                if(this.cur_skill === "fireball") {
+                    if(this.fireball_coldtime > this.eps)
                         return false;
 
-                    let fireball = outer.shoot_fireball(tx, ty);
+                    let fireball = this.shoot_fireball(tx, ty);
 
-                    if(outer.playground.mode === "multi mode") {
-                        outer.playground.mps.send_shoot_fireball(fireball.uuid, tx, ty);
+                    if(this.playground.mode === "multi mode") {
+                        this.playground.mps.send_shoot_fireball(fireball.uuid, tx, ty);
                     }
-                } else if(outer.cur_skill === "blink") {
-                    if(outer.blink_coldtime > outer.eps)
+                } else if(this.cur_skill === "blink") {
+                    if(this.blink_coldtime > this.eps)
                         return false;
-                    outer.blink(tx, ty);
+                    this.blink(tx, ty);
 
-                    if(outer.playground.mode === "multi mode") {
-                        outer.playground.mps.send_blink(tx, ty);
+                    if(this.playground.mode === "multi mode") {
+                        this.playground.mps.send_blink(tx, ty);
                     }
                 }
-                outer.cur_skill = null;
+                this.cur_skill = null;
             }
         });
-        this.playground.game_map.$canvas.keydown(function(e) {
+        this.playground.game_map.$canvas.keydown(e => {
             if(e.which === 13) {    // enter
-                if(outer.playground.mode === "multi mode") {    // 打开聊天框
-                    outer.playground.chat_field.show_input();
+                if(this.playground.mode === "multi mode") {    // 打开聊天框
+                    this.playground.chat_field.show_input();
                     return false;
                 }
             } else if(e.which === 27) {     // esc
-                if(outer.playground.mode === "multi mode") {
-                    outer.playground.chat_field.hide_input();
+                if(this.playground.mode === "multi mode") {
+                    this.playground.chat_field.hide_input();
                 }
             }
 
             if(e.which === 32) {    // space
-                outer.playground.focus_player = this;
-                outer.playground.re_calculate_cx_cy(outer.x, outer.y);
+                this.playground.focus_player = this;
+                this.playground.re_calculate_cx_cy(this.x, this.y);
                 return false;
             }
 
-            if(outer.playground.state !== "fighting")
+            if(this.playground.state !== "fighting")
                 return true;    // 返回false就将监听事件在此消失, 返回true是让父元素处理
 
             if(e.which === 81) { //q
-                if(outer.fireball_coldtime > outer.eps)
+                if(this.fireball_coldtime > this.eps)
                     return true;
-                outer.cur_skill = "fireball";
+                this.cur_skill = "fireball";
                 return false;
             } else if(e.which === 70) {     //f
-                if(outer.blink_coldtime > outer.eps)
+                if(this.blink_coldtime > this.eps)
                     return true;
 
-                outer.cur_skill = "blink";
+                this.cur_skill = "blink";
                 return false;
             }
         });
@@ -1304,30 +1297,27 @@ class ScoreBoard extends AcGameObject {
     }
 
     add_listening_events() {
-        let outer = this;
         let $canvas = this.playground.game_map.$canvas;
 
-        $canvas.on(`click`, function() {
-            outer.playground.hide();
-            outer.playground.root.menu.show();
+        $canvas.on(`click`, () => {
+            this.playground.hide();
+            this.playground.root.menu.show();
         });
     }
 
     win() {
         this.state = "win";
 
-        let outer = this;
-        setTimeout(function() {
-            outer.add_listening_events();
+        setTimeout(() => {
+            this.add_listening_events();
         }, 1000);
     }
 
     lose() {
         this.state = "lose";
 
-        let outer = this;
-        setTimeout(function() {
-            outer.add_listening_events();
+        setTimeout(() => {
+            this.add_listening_events();
         }, 1000);
     }
 
@@ -1446,7 +1436,7 @@ class MultiPlayerSocket {
     constructor(playground) {
         this.playground = playground;
 
-        this.ws = new WebSocket("wss://game.zzqahm.top/wss/multiplayer/");
+        this.ws = new WebSocket("wss://game.zzqahm.top/wss/multiplayer/?token=" + this.playground.root.access);
         this.start();
     }
 
@@ -1455,34 +1445,32 @@ class MultiPlayerSocket {
     }
 
     receive() {
-        let outer = this;
-        this.ws.onmessage = function(e) {
+        this.ws.onmessage = e => {
             let data = JSON.parse(e.data);
             let uuid = data.uuid;
-            if(uuid === outer.uuid) return false;
+            if(uuid === this.uuid) return false;
 
             let event = data.event;
             if(event === "create_player") {
-                outer.receive_create_player(uuid, data.username, data.photo);
+                this.receive_create_player(uuid, data.username, data.photo);
             } else if(event === "move_to") {
-                outer.receive_move_to(uuid, data.tx, data.ty);
+                this.receive_move_to(uuid, data.tx, data.ty);
             } else if(event === "shoot_fireball") {
-                outer.receive_shoot_fireball(uuid, data.ball_uuid, data.tx, data.ty);
+                this.receive_shoot_fireball(uuid, data.ball_uuid, data.tx, data.ty);
             } else if(event === "attack") {
-                outer.receive_attack(uuid, data.attackee_uuid, data.x, data.y, data.angle, data.damage, data.ball_uuid);
+                this.receive_attack(uuid, data.attackee_uuid, data.x, data.y, data.angle, data.damage, data.ball_uuid);
             } else if(event === "blink") {
-                outer.receive_blink(uuid, data.tx, data.ty);
+                this.receive_blink(uuid, data.tx, data.ty);
             } else if(event === "message") {
-                outer.receive_message(uuid, data.username, data.text);
+                this.receive_message(uuid, data.username, data.text);
             }
         };
     }
 
     send_create_player(username, photo) {
-        let outer = this;
         this.ws.send(JSON.stringify({
             'event': "create_player",
-            'uuid': outer.uuid,
+            'uuid': this.uuid,
             'username': username,
             'photo': photo,
         }));
@@ -1517,10 +1505,9 @@ class MultiPlayerSocket {
     }
 
     send_move_to(tx, ty) {
-        let outer = this;
         this.ws.send(JSON.stringify({
             'event': "move_to",
-            'uuid': outer.uuid,
+            'uuid': this.uuid,
             'tx': tx,
             'ty': ty,
         }));
@@ -1535,10 +1522,9 @@ class MultiPlayerSocket {
     }
 
     send_shoot_fireball(ball_uuid, tx, ty) {
-        let outer = this;
         this.ws.send(JSON.stringify({
             'event': "shoot_fireball",
-            'uuid': outer.uuid,
+            'uuid': this.uuid,
             'ball_uuid': ball_uuid,
             'tx': tx,
             'ty': ty,
@@ -1554,10 +1540,9 @@ class MultiPlayerSocket {
     }
 
     send_attack(attackee_uuid, x, y, angle, damage, ball_uuid) {
-        let outer = this;
         this.ws.send(JSON.stringify({
             'event': "attack",
-            'uuid': outer.uuid,
+            'uuid': this.uuid,
             'attackee_uuid': attackee_uuid,
             'x': x,
             'y': y,
@@ -1576,10 +1561,9 @@ class MultiPlayerSocket {
     }
 
     send_blink(tx, ty) {
-        let outer = this;
         this.ws.send(JSON.stringify({
             'event': "blink",
-            'uuid': outer.uuid,
+            'uuid': this.uuid,
             'tx': tx,
             'ty': ty,
         }));
@@ -1593,10 +1577,9 @@ class MultiPlayerSocket {
     }
 
     send_message(username, text) {
-        let outer = this;
         this.ws.send(JSON.stringify({
             'event': "message",
-            'uuid': outer.uuid,
+            'uuid': this.uuid,
             'username': username,
             'text': text,
         }));
@@ -1632,14 +1615,13 @@ class AcGamePlayground {
     }
 
     start() {
-        let outer = this;
         let uuid = this.create_uuid();
-        $(window).on('resize.${uuid}', function() {
-            outer.resize();
+        $(window).on('resize.${uuid}', () => {
+            this.resize();
         });
 
         if(this.root.AcWingOS) {
-            this.root.AcWingOS.api.window.on_close(function() {
+            this.root.AcWingOS.api.window.on_close(() => {
                 $(window).off('resize.${uuid}');
             });
         }
@@ -1674,7 +1656,6 @@ class AcGamePlayground {
     }
 
     show(mode) {    // 打开playground界面
-        let outer = this;
         this.$playground.show();
         this.width = this.$playground.width();
         this.height = this.$playground.height();
@@ -1728,8 +1709,8 @@ class AcGamePlayground {
             this.mps = new MultiPlayerSocket(this);
             this.mps.uuid = this.players[0].uuid;
 
-            this.mps.ws.onopen = function() {
-                outer.mps.send_create_player(outer.root.settings.username, outer.root.settings.photo);
+            this.mps.ws.onopen = () => {
+                this.mps.send_create_player(this.root.settings.username, this.root.settings.photo);
             };
         }
         // 等加进来所有东西后再加地图, 要不然会被覆盖
@@ -1877,41 +1858,70 @@ class Settings {
         if(this.platform === "ACAPP") {
             this.getinfo_acapp();
         } else {
-            this.getinfo_web();
+            if(this.root.access) {
+                this.getinfo_web();
+                this.refresh_jwt_token();
+            } else {
+                this.login();
+            }
             this.add_listening_events();
         }
     }
 
+    refresh_jwt_token() {
+        setInterval(() => {
+            $.ajax({
+                url: "https://game.zzqahm.top/settings/token/refresh/",
+                type: "post",
+                data: {
+                    refresh: this.root.refresh,
+                },
+                success: resp => {
+                    this.root.access = resp.access;
+                }
+            });
+        }, 4.5 * 60 * 1000);
+        setTimeout(() => {
+            $.ajax({
+                url: "https://game.zzqahm.top/menu/ranklist/",
+                type: "get",
+                headers: {
+                    "Authorization": "Bearer " + this.root.access,
+                },
+                success: resp => {
+                    console.log(resp);
+                }
+            });
+        }, 5 * 1000);
+    }
+
     add_listening_events() {
-        let outer = this;
         this.add_listening_events_login();
         this.add_listening_events_register();
 
-        this.$acwing_login.click(function() {
-            outer.acwing_login();
+        this.$acwing_login.click(() => {
+            this.acwing_login();
         });
-        this.$qq_login.click(function() {
-            outer.qq_login();
+        this.$qq_login.click(() => {
+            this.qq_login();
         });
     }
 
     add_listening_events_login() {
-        let outer = this;
-        this.$login_register.click(function() {
-            outer.register();
+        this.$login_register.click(() => {
+            this.register();
         });
-        this.$login_submit.click(function() {
-            outer.login_on_remote();
+        this.$login_submit.click(() => {
+            this.login_on_remote();
         });
     }
 
     add_listening_events_register() {
-        let outer = this;
-        this.$register_login.click(function() {
-            outer.login();
+        this.$register_login.click(() => {
+            this.login();
         });
-        this.$register_submit.click(function() {
-            outer.register_on_remote();
+        this.$register_submit.click(() => {
+            this.register_on_remote();
         });
     }
 
@@ -1919,7 +1929,7 @@ class Settings {
         $.ajax({
             url: "https://game.zzqahm.top/settings/acwing/web/apply_code/",
             type: "GET",
-            success: function(resp) {
+            success: resp => {
                 if(resp.result === "success") {
                     window.location.replace(resp.apply_code_url);
                 }
@@ -1931,7 +1941,7 @@ class Settings {
         $.ajax({
             url: "https://game.zzqahm.top/settings/qq/apply_code/",
             type: "GET",
-            success: function(resp) {
+            success: resp => {
                 if(resp.result === "success") {
                     window.location.replace(resp.apply_code_url);
                 }
@@ -1939,31 +1949,31 @@ class Settings {
         });
     }
 
-    login_on_remote() {     // 在远程服务器上登录
-        let outer = this;
-        let username = this.$login_username.val();
-        let password = this.$login_password.val();
+    login_on_remote(username, password) {     // 在远程服务器上登录
+        username = username || this.$login_username.val();
+        password = password || this.$login_password.val();
         this.$login_error_message.empty();
 
         $.ajax({
-            url: "https://game.zzqahm.top/settings/login/",
-            type: "GET",
+            url: "https://game.zzqahm.top/settings/token/",
+            type: "POST",
             data: {
                 username: username,
                 password: password,
             },
-            success: function(resp) {
-                if(resp.result === "success") {
-                    location.reload();    // 登录成功就刷新
-                } else {
-                    outer.$login_error_message.html(resp.result);
-                }
+            success: resp => {
+                this.root.access = resp.access;
+                this.root.refresh = resp.refresh;
+                this.refresh_jwt_token();
+                this.getinfo_web();
+            },
+            error: () => {
+                this.$login_error_message.html("用户名或密码错误！");
             }
         });
     }
 
     register_on_remote() {  // 在远程服务器上注册
-        let outer = this;
         let username = this.$register_username.val();
         let password = this.$register_password.val();
         let password_confirm = this.$register_password_confirm.val();
@@ -1971,17 +1981,17 @@ class Settings {
 
         $.ajax({
             url: "https://game.zzqahm.top/settings/register/",
-            type: "GET",
+            type: "POST",
             data: {
-                username: username,
-                password: password,
-                password_confirm: password_confirm,
+                username,
+                password,
+                password_confirm,
             },
-            success: function(resp) {
+            success: resp => {
                 if(resp.result === "success") {
-                    location.reload();
+                    this.login_on_remote(username, password);
                 } else {
-                    outer.$register_error_message.html(resp.result);
+                    this.$register_error_message.html(resp.result);
                 }
             }
         });
@@ -1991,15 +2001,9 @@ class Settings {
         if(this.platform === "ACAPP") {
             this.root.AcWingOS.api.window.close();
         } else {
-            $.ajax({
-                url: "https://game.zzqahm.top/settings/logout/",
-                type: "GET",
-                success: function(resp) {
-                    if(resp.result === "success") {
-                        location.reload();
-                    }
-                }
-            });
+            this.root.access = "";
+            this.root.refresh = "";
+            location.href = "/";
         }
     }
 
@@ -2014,46 +2018,49 @@ class Settings {
     }
 
     acapp_login(appid, redirect_uri, scope, state) {
-        let outer = this;
-        this.root.AcWingOS.api.oauth2.authorize(appid, redirect_uri, scope, state, function(resp) {
+        this.root.AcWingOS.api.oauth2.authorize(appid, redirect_uri, scope, state, resp => {
             if(resp.result === "success") {
-                outer.username = resp.username;
-                outer.photo = resp.photo;
-                outer.hide();
-                outer.root.menu.show();
+                this.username = resp.username;
+                this.photo = resp.photo;
+                this.hide();
+                this.root.menu.show();
+                this.root.access = resp.access;
+                this.root.refresh = resp.refresh;
+                this.refresh_jwt_token();
             }
         });
     }
 
     getinfo_acapp() {
-        let outer = this;
         $.ajax({
             url: "https://game.zzqahm.top/settings/acwing/acapp/apply_code/",
             type: "GET",
-            success: function(resp) {
+            success: resp => {
                 if(resp.result === "success") {
-                    outer.acapp_login(resp.appid, resp.redirect_uri, resp.scope, resp.state);
+                    this.acapp_login(resp.appid, resp.redirect_uri, resp.scope, resp.state);
                 }
             }
         });
     }
 
     getinfo_web() {
-        let outer = this;
         $.ajax({
             url: "https://game.zzqahm.top/settings/getinfo/",
             type: "GET",
             data: {
-                platform: outer.platform,
+                platform: this.platform,
             },
-            success: function(resp) {
+            headers: {
+                'Authorization': "Bearer " + this.root.access,
+            },
+            success: resp => {
                 if(resp.result === "success") {
-                    outer.username = resp.username;
-                    outer.photo = resp.photo;
-                    outer.hide();
-                    outer.root.menu.show();
+                    this.username = resp.username;
+                    this.photo = resp.photo;
+                    this.hide();
+                    this.root.menu.show();
                 } else {
-                    outer.login();
+                    this.login();
                 }
             }
         });
@@ -2068,10 +2075,13 @@ class Settings {
     }
 }
 export class AcGame {
-    constructor(id, AcWingOS) {
+    constructor(id, AcWingOS, access, refresh) {
         this.id = id;
         this.$ac_game = $('#' + id);
         this.AcWingOS = AcWingOS;
+
+        this.access = access;
+        this.refresh = refresh;
 
         this.settings = new Settings(this);
         this.menu = new AcGameMenu(this);

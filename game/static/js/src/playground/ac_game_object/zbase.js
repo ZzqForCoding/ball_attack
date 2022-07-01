@@ -47,7 +47,7 @@ class AcGameObject {
 }
 
 let last_timestamp;
-let AC_GAME_ANIMATION = function(timestamp) {
+let AC_GAME_ANIMATION = timestamp => {
 
     for(let i = 0; i < AC_GAME_OBJECTS.length; i++) {
         let obj = AC_GAME_OBJECTS[i];

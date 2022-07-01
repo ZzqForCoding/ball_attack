@@ -61,88 +61,87 @@ class Player extends AcGameObject {
     }
 
     add_listening_events() {
-        let outer = this;
-        this.playground.game_map.$canvas.on("contextmenu", function() {
+        this.playground.game_map.$canvas.on("contextmenu", () => {
             return false;
         });
-        this.playground.game_map.$canvas.mousedown(function(e) {
-            if(outer.playground.state !== "fighting")
+        this.playground.game_map.$canvas.mousedown(e => {
+            if(this.playground.state !== "fighting")
                 return true;
 
-            const rect = outer.ctx.canvas.getBoundingClientRect();
+            const rect = this.ctx.canvas.getBoundingClientRect();
 
-            let tx = (e.clientX - rect.left) / outer.playground.scale + outer.playground.cx;
-            let ty = (e.clientY - rect.top) / outer.playground.scale + outer.playground.cy;
+            let tx = (e.clientX - rect.left) / this.playground.scale + this.playground.cx;
+            let ty = (e.clientY - rect.top) / this.playground.scale + this.playground.cy;
 
-            if(e.which === 3 || e.which === 1 && outer.cur_skill === "blink") {
+            if(e.which === 3 || e.which === 1 && this.cur_skill === "blink") {
                 if(tx < 0) tx = 0;
-                if(tx > outer.playground.virtual_map_width) tx = outer.playground.virtual_map_width;
+                if(tx > this.playground.virtual_map_width) tx = this.playground.virtual_map_width;
                 if(ty < 0) ty = 0;
-                if(ty > outer.playground.virtual_map_height) ty = outer.playground.virtual_map_height;
+                if(ty > this.playground.virtual_map_height) ty = this.playground.virtual_map_height;
             }
 
             if(e.which === 3) {
                 for(let i = 0; i < 20; i++) {
-                    new MoveClickParticle(outer.playground, tx, ty, "rgb(209,213,219)");
+                    new MoveClickParticle(this.playground, tx, ty, "rgb(209,213,219)");
                 }
-                outer.move_to(tx, ty);
+                this.move_to(tx, ty);
 
-                if(outer.playground.mode === "multi mode") {
-                    outer.playground.mps.send_move_to(tx, ty);
+                if(this.playground.mode === "multi mode") {
+                    this.playground.mps.send_move_to(tx, ty);
                 }
             } else if(e.which === 1) {
-                if(outer.cur_skill === "fireball") {
-                    if(outer.fireball_coldtime > outer.eps)
+                if(this.cur_skill === "fireball") {
+                    if(this.fireball_coldtime > this.eps)
                         return false;
 
-                    let fireball = outer.shoot_fireball(tx, ty);
+                    let fireball = this.shoot_fireball(tx, ty);
 
-                    if(outer.playground.mode === "multi mode") {
-                        outer.playground.mps.send_shoot_fireball(fireball.uuid, tx, ty);
+                    if(this.playground.mode === "multi mode") {
+                        this.playground.mps.send_shoot_fireball(fireball.uuid, tx, ty);
                     }
-                } else if(outer.cur_skill === "blink") {
-                    if(outer.blink_coldtime > outer.eps)
+                } else if(this.cur_skill === "blink") {
+                    if(this.blink_coldtime > this.eps)
                         return false;
-                    outer.blink(tx, ty);
+                    this.blink(tx, ty);
 
-                    if(outer.playground.mode === "multi mode") {
-                        outer.playground.mps.send_blink(tx, ty);
+                    if(this.playground.mode === "multi mode") {
+                        this.playground.mps.send_blink(tx, ty);
                     }
                 }
-                outer.cur_skill = null;
+                this.cur_skill = null;
             }
         });
-        this.playground.game_map.$canvas.keydown(function(e) {
+        this.playground.game_map.$canvas.keydown(e => {
             if(e.which === 13) {    // enter
-                if(outer.playground.mode === "multi mode") {    // 打开聊天框
-                    outer.playground.chat_field.show_input();
+                if(this.playground.mode === "multi mode") {    // 打开聊天框
+                    this.playground.chat_field.show_input();
                     return false;
                 }
             } else if(e.which === 27) {     // esc
-                if(outer.playground.mode === "multi mode") {
-                    outer.playground.chat_field.hide_input();
+                if(this.playground.mode === "multi mode") {
+                    this.playground.chat_field.hide_input();
                 }
             }
 
             if(e.which === 32) {    // space
-                outer.playground.focus_player = this;
-                outer.playground.re_calculate_cx_cy(outer.x, outer.y);
+                this.playground.focus_player = this;
+                this.playground.re_calculate_cx_cy(this.x, this.y);
                 return false;
             }
 
-            if(outer.playground.state !== "fighting")
+            if(this.playground.state !== "fighting")
                 return true;    // 返回false就将监听事件在此消失, 返回true是让父元素处理
 
             if(e.which === 81) { //q
-                if(outer.fireball_coldtime > outer.eps)
+                if(this.fireball_coldtime > this.eps)
                     return true;
-                outer.cur_skill = "fireball";
+                this.cur_skill = "fireball";
                 return false;
             } else if(e.which === 70) {     //f
-                if(outer.blink_coldtime > outer.eps)
+                if(this.blink_coldtime > this.eps)
                     return true;
 
-                outer.cur_skill = "blink";
+                this.cur_skill = "blink";
                 return false;
             }
         });

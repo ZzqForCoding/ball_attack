@@ -50,24 +50,22 @@ class AcGameMenu {
     }
 
     add_listening_events() {
-        let outer = this;
-        this.$single_mode.click(function() {
-            outer.hide();
-            // outer.root.playground.show("single mode");
-            outer.root.choose_mode.show();
-            outer.playMusic();
+        this.$single_mode.click(() => {
+            this.hide();
+            this.root.choose_mode.show();
+            this.playMusic();
         });
-        this.$multi_mode.click(function() {
-            outer.hide();
-            outer.root.playground.show("multi mode");
-            outer.playMusic();
+        this.$multi_mode.click(() => {
+            this.hide();
+            this.root.playground.show("multi mode");
+            this.playMusic();
         });
-        this.$rank.click(function() {
-            outer.hide();
-            outer.root.rank.show();
+        this.$rank.click(() => {
+            this.hide();
+            this.root.rank.show();
         });
-        this.$settings.click(function() {
-            outer.root.settings.logout_on_remote();
+        this.$settings.click(() => {
+            this.root.settings.logout_on_remote();
         });
     }
 
