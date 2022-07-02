@@ -59,7 +59,21 @@ def receive_code(request):
     username = userinfo_res['username']
     photo = userinfo_res['photo']
 
-    while User.objects.filter(username=username).exists():  # 找到一个新用户名
+    users = User.objects.filter(username=username)
+    while users.exists():  # 找到一个新用户名
+        players = Player.objects.filter(user=users[0])
+        if players.exists():
+            player = players[0]
+            refresh = RefreshToken.for_user(player.user)
+            return JsonResponse ({
+                'result': "success",
+                'username': player.user.username,
+                'photo': player.photo,
+                'access': str(refresh.access_token),
+                'refresh': str(refresh),
+            })
+
+    while User.objects.filter(username=username).exists():
         username += str(randint(0, 9))
 
     user = User.objects.create(username=username)

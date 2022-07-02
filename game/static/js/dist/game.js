@@ -1026,7 +1026,7 @@ class Player extends AcGameObject {
             if(this.playground.state === "waiting") {
                 if(e.which === 27) {
                     this.playground.mps.send_remove_player(this.username, this.photo);
-                    this.playground.root.menu.pauseMusic();
+                    // this.playground.root.menu.pauseMusic();
                     this.destroy();
                 }
             }
