@@ -374,6 +374,10 @@ class AcGameMenu {
         $('.ac-game-background-music').get(0).play();
     }
 
+    pauseMusic() {
+        $('.ac-game-background-music').get(0).pause();
+    }
+
     show() {    // 显示menu界面
         this.$menu.show();
     }
@@ -934,7 +938,7 @@ class Player extends AcGameObject {
 
     start() {
         this.playground.player_count++;
-        this.playground.notice_board.write("已就绪: " + this.playground.player_count + "人");
+        this.playground.notice_board.write("已就绪: " + this.playground.player_count + "人(按下ESC键取消匹配)");
 
         if(this.playground.player_count >= 3) {
             this.playground.state = "fighting";
@@ -1017,6 +1021,14 @@ class Player extends AcGameObject {
                 this.playground.focus_player = this;
                 this.playground.re_calculate_cx_cy(this.x, this.y);
                 return false;
+            }
+
+            if(this.playground.state === "waiting") {
+                if(e.which === 27) {
+                    this.playground.mps.send_remove_player(this.username, this.photo);
+                    this.playground.root.menu.pauseMusic();
+                    this.destroy();
+                }
             }
 
             if(this.playground.state !== "fighting")
@@ -1277,6 +1289,11 @@ class Player extends AcGameObject {
                 break;
             }
         }
+        if(this.playground.state === "waiting") {
+            this.playground.state = "over";
+            this.playground.hide();
+            this.playground.root.menu.show();
+        }
     }
 }
 class ScoreBoard extends AcGameObject {
@@ -1450,9 +1467,12 @@ class MultiPlayerSocket {
             let uuid = data.uuid;
             if(uuid === this.uuid) return false;
 
+            console.log(data);
             let event = data.event;
             if(event === "create_player") {
                 this.receive_create_player(uuid, data.username, data.photo);
+            } else if(event === "remove_player") {
+                this.receive_remove_player(uuid, data.username, data.photo);
             } else if(event === "move_to") {
                 this.receive_move_to(uuid, data.tx, data.ty);
             } else if(event === "shoot_fireball") {
@@ -1491,6 +1511,24 @@ class MultiPlayerSocket {
 
         player.uuid = uuid;
         this.playground.players.push(player);
+    }
+
+    send_remove_player(username, photo) {
+        this.ws.send(JSON.stringify({
+            'event': "remove_player",
+            'uuid': this.uuid,
+            'username': username,
+            'photo': photo,
+        }));
+    }
+
+    receive_remove_player(uuid, username, photo) {
+        let players = this.playground.players;
+        for(let i = 0; i < players.length; i++) {
+            if(players[i].uuid === uuid) {
+                this.playground.players.splice(i, 1);
+            }
+        }
     }
 
     get_player(uuid) {

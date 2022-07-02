@@ -98,6 +98,32 @@ class MultiPlayer(AsyncWebsocketConsumer):
             }
         )
 
+    async def remove_player(self, data):
+        # Make socket
+        transport = TSocket.TSocket('127.0.0.1', 9090)
+
+        # Buffering is critical. Raw sockets are very slow
+        transport = TTransport.TBufferedTransport(transport)
+
+        # Wrap in a protocol
+        protocol = TBinaryProtocol.TBinaryProtocol(transport)
+
+        # Create a client to use the protocol encoder
+        client = Match.Client(protocol)
+
+        # 异步更新数据库需要定义函数
+        def db_get_player():
+            return Player.objects.get(user__username=data['username'])
+
+        player = await database_sync_to_async(db_get_player)()
+
+        # Connect!
+        transport.open()
+
+        client.remove_player(player.score, data['uuid'], data['username'], data['photo'], self.channel_name)
+
+        # Close!
+        transport.close()
 
     async def move_to(self, data):
         await self.channel_layer.group_send(
@@ -210,6 +236,8 @@ class MultiPlayer(AsyncWebsocketConsumer):
 
         if event == 'create_player':
             await self.create_player(data)
+        elif event == 'remove_player':
+            await self.remove_player(data)
         elif event == 'move_to':
             await self.move_to(data)
         elif event == 'shoot_fireball':

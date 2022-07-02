@@ -16,9 +16,12 @@ class MultiPlayerSocket {
             let uuid = data.uuid;
             if(uuid === this.uuid) return false;
 
+            console.log(data);
             let event = data.event;
             if(event === "create_player") {
                 this.receive_create_player(uuid, data.username, data.photo);
+            } else if(event === "remove_player") {
+                this.receive_remove_player(uuid, data.username, data.photo);
             } else if(event === "move_to") {
                 this.receive_move_to(uuid, data.tx, data.ty);
             } else if(event === "shoot_fireball") {
@@ -57,6 +60,24 @@ class MultiPlayerSocket {
 
         player.uuid = uuid;
         this.playground.players.push(player);
+    }
+
+    send_remove_player(username, photo) {
+        this.ws.send(JSON.stringify({
+            'event': "remove_player",
+            'uuid': this.uuid,
+            'username': username,
+            'photo': photo,
+        }));
+    }
+
+    receive_remove_player(uuid, username, photo) {
+        let players = this.playground.players;
+        for(let i = 0; i < players.length; i++) {
+            if(players[i].uuid === uuid) {
+                this.playground.players.splice(i, 1);
+            }
+        }
     }
 
     get_player(uuid) {

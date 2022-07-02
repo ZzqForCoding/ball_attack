@@ -29,12 +29,24 @@ class Player:
         self.channel_name = channel_name
         self.waiting_time = 0
 
+class Operate:
+    def __init__(self, type, player):
+        self.type = type
+        self.player = player
+
 class Pool:
     def __init__(self):
         self.players = []
 
     def add_player(self, player):
         self.players.append(player)
+
+    def remove_player(self, player):
+        for i in range(len(self.players)):
+            if self.players[i].uuid == player.uuid:
+                del self.players[i]
+                print("删除%d成功" % i)
+                break
 
     def check_match(self, a, b):
         # 防止相同玩家匹配在一起
@@ -92,12 +104,20 @@ class Pool:
 
 class MatchHandler:
     def add_player(self, score, uuid, username, photo, channel_name):
-        print("Add Player: %s %d" % (username, score))
+        print("Add Player: %s %d %s" % (username, score, uuid))
         player = Player(score, uuid, username, photo, channel_name)
-        queue.put(player)
+        op = Operate("add", player)
+        queue.put(op)
         return 0
 
-def get_player_from_queue():
+    def remove_player(self, score, uuid, username, photo, channel_name):
+        print("Remove Player: %s %d %s" % (username, score, uuid));
+        player = Player(score, uuid, username, photo, channel_name)
+        op = Operate("remove", player)
+        queue.put(op)
+        return 0
+
+def get_operate_from_queue():
     try:
         return queue.get_nowait()
     except:
@@ -106,9 +126,12 @@ def get_player_from_queue():
 def worker():
     pool = Pool()
     while True:
-        player = get_player_from_queue()
-        if player:
-            pool.add_player(player)
+        op = get_operate_from_queue()
+        if op:
+            if op.type == "add":
+                pool.add_player(op.player)
+            else:
+                pool.remove_player(op.player)
         else:
             pool.match()
             sleep(1)
@@ -120,8 +143,7 @@ if __name__ == '__main__':
     tfactory = TTransport.TBufferedTransportFactory()
     pfactory = TBinaryProtocol.TBinaryProtocolFactory()
 
-    server = TServer.TThreadedServer(
-        processor, transport, tfactory, pfactory)
+    server = TServer.TThreadedServer(processor, transport, tfactory, pfactory)
 
     Thread(target=worker, daemon=True).start()      # 开一个线程
 

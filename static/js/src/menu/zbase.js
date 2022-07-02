@@ -78,6 +78,10 @@ class AcGameMenu {
         $('.ac-game-background-music').get(0).play();
     }
 
+    pauseMusic() {
+        $('.ac-game-background-music').get(0).pause();
+    }
+
     show() {    // 显示menu界面
         this.$menu.show();
     }

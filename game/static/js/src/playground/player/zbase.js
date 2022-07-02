@@ -44,7 +44,7 @@ class Player extends AcGameObject {
 
     start() {
         this.playground.player_count++;
-        this.playground.notice_board.write("已就绪: " + this.playground.player_count + "人");
+        this.playground.notice_board.write("已就绪: " + this.playground.player_count + "人(按下ESC键取消匹配)");
 
         if(this.playground.player_count >= 3) {
             this.playground.state = "fighting";
@@ -127,6 +127,14 @@ class Player extends AcGameObject {
                 this.playground.focus_player = this;
                 this.playground.re_calculate_cx_cy(this.x, this.y);
                 return false;
+            }
+
+            if(this.playground.state === "waiting") {
+                if(e.which === 27) {
+                    this.playground.mps.send_remove_player(this.username, this.photo);
+                    this.playground.root.menu.pauseMusic();
+                    this.destroy();
+                }
             }
 
             if(this.playground.state !== "fighting")
@@ -386,6 +394,11 @@ class Player extends AcGameObject {
                 this.playground.players.splice(i, 1);
                 break;
             }
+        }
+        if(this.playground.state === "waiting") {
+            this.playground.state = "over";
+            this.playground.hide();
+            this.playground.root.menu.show();
         }
     }
 }
