@@ -1859,13 +1859,55 @@ class Settings {
             this.getinfo_acapp();
         } else {
             if(this.root.access) {
+                history.pushState({},"","https://game.zzqahm.top/");
                 this.getinfo_web();
                 this.refresh_jwt_token();
+            } else if(localStorage.getItem("username") !== null) {
+                this.get_user();
+                if(new Date().getTime() - this.root.refresh_expires.getTime() >= 12 * 24 * 60 * 60 * 1000 - 10 * 60 * 1000) {
+                    localStorage.clear();
+                    this.login();
+                    return;
+                } else if(new Date().getTime() - this.root.access_expires.getTime() >= 4.5 * 60 * 1000) {
+                    $.ajax({
+                        url: "https://game.zzqahm.top/settings/token/refresh/",
+                        type: "post",
+                        data: {
+                            refresh: this.root.refresh,
+                        },
+                        success: resp => {
+                            this.root.access = resp.access;
+                            localStorage.setItem("access", this.root.access);
+                            localStorage.setItem("access_expires", new Date());
+                        }
+                    });
+                }
+                this.refresh_jwt_token();
+                this.hide();
+                this.root.menu.show();
             } else {
                 this.login();
             }
             this.add_listening_events();
         }
+    }
+
+    rem_user() {
+        localStorage.setItem("username", this.username);
+        localStorage.setItem("photo", this.photo);
+        localStorage.setItem("access", this.root.access);
+        localStorage.setItem("refresh", this.root.refresh);
+        localStorage.setItem("access_expires", new Date());
+        localStorage.setItem("refresh_expires", new Date());
+    }
+
+    get_user() {
+        this.username = localStorage.getItem("username");
+        this.photo = localStorage.getItem("photo");
+        this.root.access = localStorage.getItem("access");
+        this.root.refresh = localStorage.getItem("refresh");
+        this.root.access_expires = new Date(localStorage.getItem("access_expires"));
+        this.root.refresh_expires = new Date(localStorage.getItem("refresh_expires"));
     }
 
     refresh_jwt_token() {
@@ -1878,6 +1920,8 @@ class Settings {
                 },
                 success: resp => {
                     this.root.access = resp.access;
+                    localStorage.setItem("access", this.root.access);
+                    localStorage.setItem("access_expires", new Date());
                 }
             });
         }, 4.5 * 60 * 1000);
@@ -2003,6 +2047,7 @@ class Settings {
         } else {
             this.root.access = "";
             this.root.refresh = "";
+            localStorage.clear();
             location.href = "/";
         }
     }
@@ -2057,6 +2102,7 @@ class Settings {
                 if(resp.result === "success") {
                     this.username = resp.username;
                     this.photo = resp.photo;
+                    this.rem_user();
                     this.hide();
                     this.root.menu.show();
                 } else {
@@ -2081,10 +2127,12 @@ export class AcGame {
         this.AcWingOS = AcWingOS;
 
         this.access = access;
+        this.access_expires = new Date();
         this.refresh = refresh;
+        this.refresh_expires = new Date();
 
-        this.settings = new Settings(this);
         this.menu = new AcGameMenu(this);
+        this.settings = new Settings(this);
         this.choose_mode = new AcGameChooseMode(this);
         this.rank = new AcGameRank(this);
         this.playground = new AcGamePlayground(this);
