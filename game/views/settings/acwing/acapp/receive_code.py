@@ -20,7 +20,7 @@ def receive_code(request):
     state = data.get('state')
 
     if not cache.has_key(state):
-        return Response({
+        return JsonResponse({
             'result': "state not exist"
         })
 

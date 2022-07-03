@@ -1,5 +1,6 @@
 from django.shortcuts import redirect, reverse
 from django.core.cache import cache
+from django.http import JsonResponse
 import requests
 from django.contrib.auth.models import User
 from game.models.player.player import Player
