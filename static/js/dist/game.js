@@ -236,7 +236,7 @@ class AcGameRank {
                     this.score_player_time = new Date();
                     for(let i = 0; i < this.score_player.length; i++) {
                         let player = this.score_player[i];
-                        let obj = "<tr><td>" + (i + 1)  + "</td><td><img src=" + player.photo + " alt=\"photo\"  width=\"33px\" height=\"33px\" style=\"border-radius:100%; margin-left:6%\"> " + player.name + "</td><td>" + player.score + "</td></tr>";
+                        let obj = "<tr><td>" + player.rank  + "</td><td><img src=" + player.photo + " alt=\"photo\"  width=\"33px\" height=\"33px\" style=\"border-radius:100%; margin-left:6%\"> " + player.name + "</td><td>" + player.score + "</td></tr>";
                         this.$score_table_content.append(obj);
                     }
                 }
