@@ -109,6 +109,7 @@ class Settings {
             this.getinfo_acapp();
         } else {
             if(this.root.access) {
+                // 如果是第三方登录，access和refresh会在url中，不安全，手动更新url
                 history.pushState({},"","https://game.zzqahm.top:20002/");
                 this.getinfo_web();
                 this.refresh_jwt_token();
