@@ -23,7 +23,7 @@ def receive_code(request):
         'client_id': "102009232",
         'client_secret': "cCbnnbDcpqc8VdXC",
         'code': code,
-        'redirect_uri': "https://game.zzqahm.top/settings/qq/receive_code",
+        'redirect_uri': "https://game.zzqahm.top:20002/settings/qq/receive_code",
         'fmt': "json"
     }
 

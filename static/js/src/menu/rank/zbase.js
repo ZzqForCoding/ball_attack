@@ -146,7 +146,7 @@ class AcGameRank {
         if(this.score_player && this.score_player_time && new Date().getTime() - this.score_player_time.getTime() <= 5 * 60 * 1000) return;
         this.$score_table_content.empty();
         $.ajax({
-            url: "https://game.zzqahm.top/menu/rank/getplayers/",
+            url: "https://game.zzqahm.top:20002/menu/rank/getplayers/",
             type: "GET",
             headers: {
                 "Authorization": "Bearer " + this.root.access,
@@ -171,7 +171,7 @@ class AcGameRank {
         this.modify_page();    // 修改页码
 
         $.ajax({
-            url: "https://game.zzqahm.top/menu/rank/getplayers/" + this.page_num + "/",
+            url: "https://game.zzqahm.top:20002/menu/rank/getplayers/" + this.page_num + "/",
             type: "GET",
             headers: {
                 "Authorization": "Bearer " + this.root.access,
@@ -191,7 +191,7 @@ class AcGameRank {
 
     get_page() {
         $.ajax({
-            url: "https://game.zzqahm.top/menu/rank/getpage/",
+            url: "https://game.zzqahm.top:20002/menu/rank/getpage/",
             type: "GET",
             headers: {
                 "Authorization": "Bearer " + this.root.access,

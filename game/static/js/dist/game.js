@@ -225,7 +225,7 @@ class AcGameRank {
         if(this.score_player && this.score_player_time && new Date().getTime() - this.score_player_time.getTime() <= 5 * 60 * 1000) return;
         this.$score_table_content.empty();
         $.ajax({
-            url: "https://game.zzqahm.top/menu/rank/getplayers/",
+            url: "https://game.zzqahm.top:20002/menu/rank/getplayers/",
             type: "GET",
             headers: {
                 "Authorization": "Bearer " + this.root.access,
@@ -250,7 +250,7 @@ class AcGameRank {
         this.modify_page();    // 修改页码
 
         $.ajax({
-            url: "https://game.zzqahm.top/menu/rank/getplayers/" + this.page_num + "/",
+            url: "https://game.zzqahm.top:20002/menu/rank/getplayers/" + this.page_num + "/",
             type: "GET",
             headers: {
                 "Authorization": "Bearer " + this.root.access,
@@ -270,7 +270,7 @@ class AcGameRank {
 
     get_page() {
         $.ajax({
-            url: "https://game.zzqahm.top/menu/rank/getpage/",
+            url: "https://game.zzqahm.top:20002/menu/rank/getpage/",
             type: "GET",
             headers: {
                 "Authorization": "Bearer " + this.root.access,
@@ -328,14 +328,14 @@ class AcGameMenu {
         this.$rank = this.$menu.find(".ac-game-menu-field-item-rank");
         this.$settings = this.$menu.find('.ac-game-menu-field-item-settings');
         this.$audio= document.getElementsByClassName('ac-game-background-music')[0];
-        this.musics = ["https://game.zzqahm.top/static/audio/BygoneBumps.mp3",
-                       "https://game.zzqahm.top/static/audio/MonsieurMelody.mp3",
-                       "https://game.zzqahm.top/static/audio/SunnyJim.mp3",
-                       "https://game.zzqahm.top/static/audio/qiuqiu.mp3",
-                       "https://game.zzqahm.top/static/audio/AudioHighs.mp3",
-                       "https://game.zzqahm.top/static/audio/BianTaiRuNiu.mp3",
-                       "https://game.zzqahm.top/static/audio/ChuLianXianDingBgm.mp3",
-                       "https://game.zzqahm.top/static/audio/DuoLaAMeng.mp3"];
+        this.musics = ["https://game.zzqahm.top:20002/static/audio/BygoneBumps.mp3",
+                       "https://game.zzqahm.top:20002/static/audio/MonsieurMelody.mp3",
+                       "https://game.zzqahm.top:20002/static/audio/SunnyJim.mp3",
+                       "https://game.zzqahm.top:20002/static/audio/qiuqiu.mp3",
+                       "https://game.zzqahm.top:20002/static/audio/AudioHighs.mp3",
+                       "https://game.zzqahm.top:20002/static/audio/BianTaiRuNiu.mp3",
+                       "https://game.zzqahm.top:20002/static/audio/ChuLianXianDingBgm.mp3",
+                       "https://game.zzqahm.top:20002/static/audio/DuoLaAMeng.mp3"];
         this.$audio.volume = 0.5;
 
         this.start();
@@ -1453,7 +1453,7 @@ class MultiPlayerSocket {
     constructor(playground) {
         this.playground = playground;
 
-        this.ws = new WebSocket("wss://game.zzqahm.top/wss/multiplayer/?token=" + this.playground.root.access);
+        this.ws = new WebSocket("wss://game.zzqahm.top:20002/wss/multiplayer/?token=" + this.playground.root.access);
         this.start();
     }
 
@@ -1789,7 +1789,7 @@ class AcGamePlayground {
 class Settings {
     constructor(root) {
         if(window.location.host === "app975.acapp.acwing.com.cn") {
-            window.location.replace("https://game.zzqahm.top/");
+            window.location.replace("https://game.zzqahm.top:20002/");
         }
         this.root = root;
         this.platform = "WEB";
@@ -1825,8 +1825,8 @@ class Settings {
         </div>
         <br>
         <div class="ac-game-settings-quick-login">
-            <img src="https://game.zzqahm.top/static/image/settings/acwing_logo.png" class="acwing-logo">
-            <img src="https://game.zzqahm.top/static/image/settings/qq_logo.png" class="qq-logo">
+            <img src="https://game.zzqahm.top:20002/static/image/settings/acwing_logo.png" class="acwing-logo">
+            <img src="https://game.zzqahm.top:20002/static/image/settings/qq_logo.png" class="qq-logo">
         </div>
     </div>
     <div class="ac-game-settings-register">
@@ -1860,8 +1860,8 @@ class Settings {
         </div>
         <br>
         <div class="ac-game-settings-quick-login">
-            <img width="30" src="https://game.zzqahm.top/static/image/settings/acwing_logo.png">
-            <img width="30" src="https://game.zzqahm.top/static/image/settings/qq_logo.png">
+            <img width="30" src="https://game.zzqahm.top:20002/static/image/settings/acwing_logo.png">
+            <img width="30" src="https://game.zzqahm.top:20002/static/image/settings/qq_logo.png">
         </div>
     </div>
 </div>
@@ -1897,7 +1897,7 @@ class Settings {
             this.getinfo_acapp();
         } else {
             if(this.root.access) {
-                history.pushState({},"","https://game.zzqahm.top/");
+                history.pushState({},"","https://game.zzqahm.top:20002/");
                 this.getinfo_web();
                 this.refresh_jwt_token();
             } else if(localStorage.getItem("username") !== null) {
@@ -1908,7 +1908,7 @@ class Settings {
                     return;
                 } else if(new Date().getTime() - this.root.access_expires.getTime() >= 4.5 * 60 * 1000) {
                     $.ajax({
-                        url: "https://game.zzqahm.top/settings/token/refresh/",
+                        url: "https://game.zzqahm.top:20002/settings/token/refresh/",
                         type: "post",
                         data: {
                             refresh: this.root.refresh,
@@ -1951,7 +1951,7 @@ class Settings {
     refresh_jwt_token() {
         setInterval(() => {
             $.ajax({
-                url: "https://game.zzqahm.top/settings/token/refresh/",
+                url: "https://game.zzqahm.top:20002/settings/token/refresh/",
                 type: "post",
                 data: {
                     refresh: this.root.refresh,
@@ -1965,7 +1965,7 @@ class Settings {
         }, 4.5 * 60 * 1000);
         setTimeout(() => {
             $.ajax({
-                url: "https://game.zzqahm.top/menu/ranklist/",
+                url: "https://game.zzqahm.top:20002/menu/ranklist/",
                 type: "get",
                 headers: {
                     "Authorization": "Bearer " + this.root.access,
@@ -2009,7 +2009,7 @@ class Settings {
 
     acwing_login() {
         $.ajax({
-            url: "https://game.zzqahm.top/settings/acwing/web/apply_code/",
+            url: "https://game.zzqahm.top:20002/settings/acwing/web/apply_code/",
             type: "GET",
             success: resp => {
                 if(resp.result === "success") {
@@ -2021,7 +2021,7 @@ class Settings {
 
     qq_login() {
         $.ajax({
-            url: "https://game.zzqahm.top/settings/qq/apply_code/",
+            url: "https://game.zzqahm.top:20002/settings/qq/apply_code/",
             type: "GET",
             success: resp => {
                 if(resp.result === "success") {
@@ -2037,7 +2037,7 @@ class Settings {
         this.$login_error_message.empty();
 
         $.ajax({
-            url: "https://game.zzqahm.top/settings/token/",
+            url: "https://game.zzqahm.top:20002/settings/token/",
             type: "POST",
             data: {
                 username: username,
@@ -2062,7 +2062,7 @@ class Settings {
         this.$register_error_message.empty();
 
         $.ajax({
-            url: "https://game.zzqahm.top/settings/register/",
+            url: "https://game.zzqahm.top:20002/settings/register/",
             type: "POST",
             data: {
                 username,
@@ -2116,7 +2116,7 @@ class Settings {
 
     getinfo_acapp() {
         $.ajax({
-            url: "https://game.zzqahm.top/settings/acwing/acapp/apply_code/",
+            url: "https://game.zzqahm.top:20002/settings/acwing/acapp/apply_code/",
             type: "GET",
             success: resp => {
                 if(resp.result === "success") {
@@ -2128,7 +2128,7 @@ class Settings {
 
     getinfo_web() {
         $.ajax({
-            url: "https://game.zzqahm.top/settings/getinfo/",
+            url: "https://game.zzqahm.top:20002/settings/getinfo/",
             type: "GET",
             data: {
                 platform: this.platform,

@@ -1,7 +1,7 @@
 class Settings {
     constructor(root) {
         if(window.location.host === "app975.acapp.acwing.com.cn") {
-            window.location.replace("https://game.zzqahm.top/");
+            window.location.replace("https://game.zzqahm.top:20002/");
         }
         this.root = root;
         this.platform = "WEB";
@@ -37,8 +37,8 @@ class Settings {
         </div>
         <br>
         <div class="ac-game-settings-quick-login">
-            <img src="https://game.zzqahm.top/static/image/settings/acwing_logo.png" class="acwing-logo">
-            <img src="https://game.zzqahm.top/static/image/settings/qq_logo.png" class="qq-logo">
+            <img src="https://game.zzqahm.top:20002/static/image/settings/acwing_logo.png" class="acwing-logo">
+            <img src="https://game.zzqahm.top:20002/static/image/settings/qq_logo.png" class="qq-logo">
         </div>
     </div>
     <div class="ac-game-settings-register">
@@ -72,8 +72,8 @@ class Settings {
         </div>
         <br>
         <div class="ac-game-settings-quick-login">
-            <img width="30" src="https://game.zzqahm.top/static/image/settings/acwing_logo.png">
-            <img width="30" src="https://game.zzqahm.top/static/image/settings/qq_logo.png">
+            <img width="30" src="https://game.zzqahm.top:20002/static/image/settings/acwing_logo.png">
+            <img width="30" src="https://game.zzqahm.top:20002/static/image/settings/qq_logo.png">
         </div>
     </div>
 </div>
@@ -121,7 +121,7 @@ class Settings {
     refresh_jwt_token() {
         setInterval(() => {
             $.ajax({
-                url: "https://game.zzqahm.top/settings/token/refresh/",
+                url: "https://game.zzqahm.top:20002/settings/token/refresh/",
                 type: "post",
                 data: {
                     refresh: this.root.refresh,
@@ -133,7 +133,7 @@ class Settings {
         }, 4.5 * 60 * 1000);
         setTimeout(() => {
             $.ajax({
-                url: "https://game.zzqahm.top/menu/ranklist/",
+                url: "https://game.zzqahm.top:20002/menu/ranklist/",
                 type: "get",
                 headers: {
                     "Authorization": "Bearer " + this.root.access,
@@ -177,7 +177,7 @@ class Settings {
 
     acwing_login() {
         $.ajax({
-            url: "https://game.zzqahm.top/settings/acwing/web/apply_code/",
+            url: "https://game.zzqahm.top:20002/settings/acwing/web/apply_code/",
             type: "GET",
             success: resp => {
                 if(resp.result === "success") {
@@ -189,7 +189,7 @@ class Settings {
 
     qq_login() {
         $.ajax({
-            url: "https://game.zzqahm.top/settings/qq/apply_code/",
+            url: "https://game.zzqahm.top:20002/settings/qq/apply_code/",
             type: "GET",
             success: resp => {
                 if(resp.result === "success") {
@@ -205,7 +205,7 @@ class Settings {
         this.$login_error_message.empty();
 
         $.ajax({
-            url: "https://game.zzqahm.top/settings/token/",
+            url: "https://game.zzqahm.top:20002/settings/token/",
             type: "POST",
             data: {
                 username: username,
@@ -230,7 +230,7 @@ class Settings {
         this.$register_error_message.empty();
 
         $.ajax({
-            url: "https://game.zzqahm.top/settings/register/",
+            url: "https://game.zzqahm.top:20002/settings/register/",
             type: "POST",
             data: {
                 username,
@@ -283,7 +283,7 @@ class Settings {
 
     getinfo_acapp() {
         $.ajax({
-            url: "https://game.zzqahm.top/settings/acwing/acapp/apply_code/",
+            url: "https://game.zzqahm.top:20002/settings/acwing/acapp/apply_code/",
             type: "GET",
             success: resp => {
                 if(resp.result === "success") {
@@ -295,7 +295,7 @@ class Settings {
 
     getinfo_web() {
         $.ajax({
-            url: "https://game.zzqahm.top/settings/getinfo/",
+            url: "https://game.zzqahm.top:20002/settings/getinfo/",
             type: "GET",
             data: {
                 platform: this.platform,
