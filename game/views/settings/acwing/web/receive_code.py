@@ -43,7 +43,7 @@ def receive_code(request):
     username = userinfo_res['username']
     photo = userinfo_res['photo']
 
-    users = User.objects.filter(usernaime=username)
+    users = User.objects.filter(username=username)
     while users.exists():  # 找到一个新用户名
         players = Player.objects.filter(user=users[0])
         if players.exists():
