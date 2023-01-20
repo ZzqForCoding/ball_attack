@@ -3,7 +3,7 @@
 # 教程：https://blog.csdn.net/woswod/article/details/80353254
 # tmux kill-session -t acapp_workspace
 
-USER_PASSWORD=123
+USER_PASSWORD=Zcbm980528
 USERNAME=zzq
 #项目路径
 WORKDIR=/home/$USERNAME/acapp
