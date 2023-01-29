@@ -29,8 +29,11 @@ docker build -t zzq10/ubuntu:ball_attack .
 ```
 
 **运行docker_run.sh脚本制作容器：**
+`注意：` 此命令挂载了目录与映射了端口号，注意修改与开放端口号！
 ```shell
 ./docker_run.sh
 ```
+
+**注意：** `conf`文件夹下的nginx配置文件与redis配置文件有需要修改可以直接修改，nginx里配置了域名与https证书；项目可以通过容器管理工具`portainer`中打开容器的终端，通过`tmux a`可查看个服务日志
 
 <br>
