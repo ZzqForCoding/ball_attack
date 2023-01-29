@@ -52,7 +52,6 @@ tmux select-pane -t 3
 tmux send-keys -t $TMUX_SESSION_NAME "cd match_system/src/" C-m
 tmux send-keys -t $TMUX_SESSION_NAME "python3 main.py" C-m
 
-touch /opt/a
-tail -f /opt/a
-
 echo "666"
+
+tail -f /dev/null
