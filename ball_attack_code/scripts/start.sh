@@ -11,7 +11,7 @@ cd $WORKDIR || exit
 # 后台新建一个session
 tmux new-session -d -s $TMUX_SESSION_NAME
 # 分割窗口
-tmux split-window -h # 纵向分割
+tmux split-window -h # 横向分割
 tmux select-pane -t 1
 tmux split-window -v
 tmux split-window -v
