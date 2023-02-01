@@ -1,6 +1,6 @@
 #! /bin/bash
 
-JS_PATH=/code/venv/game/static/js/
+JS_PATH=/code/game/static/js/
 JS_PATH_DIST=${JS_PATH}dist/
 JS_PATH_SRC=${JS_PATH}src/
 
@@ -9,4 +9,4 @@ JS_PATH_SRC=${JS_PATH}src/
 
 find $JS_PATH_SRC -type f -name '*.js' | sort | xargs cat > ${JS_PATH_DIST}game.js
 
-echo yes | python3 manage.py collectstatic
+echo yes | python3.9 manage.py collectstatic

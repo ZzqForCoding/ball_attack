@@ -1,7 +1,7 @@
 #! /bin/bash
 
 #项目路径
-WORKDIR=/code/venv
+WORKDIR=/code
 
 #tmux session的名字
 TMUX_SESSION_NAME=code_workspace
@@ -31,7 +31,7 @@ tmux select-pane -t 7
 tmux send-keys -t $TMUX_SESSION_NAME "sudo redis-server /etc/redis/redis.conf" C-m
 
 tmux select-pane -t 5
-tmux send-keys -t $TMUX_SESSION_NAME "python3 manage.py shell" C-m
+tmux send-keys -t $TMUX_SESSION_NAME "python3.9 manage.py shell" C-m
 tmux send-keys -t $TMUX_SESSION_NAME "from django.core.cache import cache" C-m
 tmux send-keys -t $TMUX_SESSION_NAME "cache.keys('*')" C-m
 tmux send-keys -t $TMUX_SESSION_NAME "cache.clear()" C-m
@@ -48,7 +48,7 @@ tmux send-keys -t $TMUX_SESSION_NAME "daphne -b 0.0.0.0 -p 5015 acapp.asgi:appli
 
 tmux select-pane -t 3
 tmux send-keys -t $TMUX_SESSION_NAME "cd match_system/src/" C-m
-tmux send-keys -t $TMUX_SESSION_NAME "python3 main.py" C-m
+tmux send-keys -t $TMUX_SESSION_NAME "python3.9 main.py" C-m
 
 echo "666"
 

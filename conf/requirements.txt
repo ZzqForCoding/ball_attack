@@ -9,5 +9,4 @@ channels_redis==4.0.0
 requests==2.28.1
 uwsgi==2.0.21
 daphne==4.0.0
-virtualenv==20.17.1
 thrift==0.16.0
