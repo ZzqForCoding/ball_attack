@@ -7,7 +7,7 @@ ENV DEBIAN_FRONTEND noninteractive
 # 安装包
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
-        apt-get -y install sudo dialog apt-utils && \
+        apt-get -y install sudo dialog apt-utils
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 # 配置pip源
 RUN mkdir ~/.pip
@@ -24,6 +24,7 @@ COPY ./ball_attack_code .
 COPY ./conf/nginx.conf /etc/nginx/nginx.conf
 COPY ./conf/cert /etc/nginx
 COPY ./conf/redis.conf /etc/redis/redis.conf
+RUN mkdir /data && chmod 777 /data && touch /data/dump.rdb && chmod 777 /data/dump.rdb
 # 运行项目
 RUN chmod +x ./scripts/start.sh
 CMD sh ./scripts/start.sh

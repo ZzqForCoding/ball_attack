@@ -49,13 +49,7 @@ def receive_code(request):
         if players.exists():
             player = players[0]
             refresh = RefreshToken.for_user(player.user)
-            return JsonResponse ({
-                'result': "success",
-                'username': player.user.username,
-                'photo': player.photo,
-                'access': str(refresh.access_token),
-                'refresh': str(refresh),
-            })
+            return redirect(reverse("index") + "?access=%s&refresh=%s" % (str(refresh.access_token), str(refresh)))
 
     while User.objects.filter(username=username).exists():
         username += str(randint(0, 9))

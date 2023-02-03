@@ -28,7 +28,7 @@ tmux select-pane -t 6
 tmux send-keys -t $TMUX_SESSION_NAME "sudo /etc/init.d/nginx start" C-m
 
 tmux select-pane -t 7
-tmux send-keys -t $TMUX_SESSION_NAME "sudo service redis-server start" C-m
+tmux send-keys -t $TMUX_SESSION_NAME "sudo /etc/init.d/redis-server start" C-m
 
 tmux select-pane -t 5
 tmux send-keys -t $TMUX_SESSION_NAME "python3 manage.py shell" C-m

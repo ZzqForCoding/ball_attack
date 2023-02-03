@@ -3,4 +3,4 @@ PyJWT==2.6.0
 djangorestframework-simplejwt==5.2.2
 thrift==0.16.0
 django_redis==5.2.0
-channels_redis==4.0.0
+channels_redis==3.4.1
