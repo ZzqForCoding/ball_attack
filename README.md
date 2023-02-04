@@ -16,7 +16,7 @@
 
 ## 游戏部署
 
-**拉取项目至本地：** [gitlab地址](git@git.acwing.com:ZzQ/acapp.git)
+**拉取项目至本地：**
 ```git
 git clone git@git.acwing.com:ZzQ/acapp.git
 ```

@@ -10,4 +10,4 @@ uwsgi==2.0.21
 daphne==3.0.2
 django-redis==5.2.0
 channels-redis==3.4.1
-
+tzdata==2022.7
