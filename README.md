@@ -28,6 +28,8 @@ cd dockerfile文件所在目录
 docker build -t zzq10/ubuntu:ball_attack .
 ```
 
+<br>
+
 **运行docker_run.sh脚本制作容器：**
 `注意：` 此命令挂载了目录与映射了端口号，注意修改与开放端口号！
 ```shell
