@@ -37,3 +37,12 @@ docker build -t zzq10/ubuntu:ball_attack .
 **注意：** `conf`文件夹下的nginx配置文件与redis配置文件有需要修改可以直接修改，nginx里配置了域名与https证书；容器可以通过`docker exec -it 容器名或id /bin/bash`命令进入容器，通过`tmux a`可查看正在运行服务
 
 <br>
+
+## 常见问题
+
+若redis写日志出现报错：`Redis:Failed opening .rdb for saving: Permission denied`，执行以下命令可解决
+```shell
+cd db_data文件夹所在目录
+sudo chmod 777 /data
+sudo chmod 777 /data/dump.rdb
+```
