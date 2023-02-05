@@ -2,6 +2,8 @@
 
 ## 项目介绍
 
+[docker hub地址](https://hub.docker.com/repository/docker/zzq10/ubuntu/general)
+
 此项目是基于`Django`框架与`Canvas`渲染实现的一个游戏，通过自制了一个简单的游戏引擎实现了碰撞，粒子效果，小地图，大地图等很多前端效果；并且后端使用`WebSocket`实现了联机对战功能，通过此项目，你会熟练掌握前端的基础：`HTML`、`CSS`、`es6`、`Canvas`，后端技术包括：`Python`、`Django`、`Django RestFramework`、`Django Channels`、`Django Redis`等技术，此外该项目使用了Thrift实现微服务，将匹配服务与后端服务分离，匹配服务支持三人匹配，是将匹配分最近的玩家匹配到一起，项目还实现了一个排行榜功能，通过了两种方式预览：分别是滑动浏览与分页浏览。
 
 <br>
